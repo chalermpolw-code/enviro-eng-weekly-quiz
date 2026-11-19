@@ -9,147 +9,128 @@
   const STORAGE_ANSWERS_KEY = "env_eng_quiz_answers_v1";
   const STORAGE_LOCAL_FORUM_KEY = "env_eng_local_forum_v1";
   const STORAGE_VOTED_POSTS_KEY = "env_eng_forum_voted_v1";
+  const STORAGE_LEVEL_KEY = "env_eng_last_level_v1";
   const CHOICE_LETTERS = ["A", "B", "C", "D"];
+  const FORUM_COLLECTION = (CONFIG.firebase && CONFIG.firebase.collectionName) || "env_eng_explanations";
 
-  // Seed sample discussions for local preview mode so Week 1 demonstrates how peer explanations look
-  const SEED_FORUM_POSTS = {
-    "2026-11-15-easy": [
-      {
-        id: "seed-e1",
-        questionNumber: 1,
-        author: "M. Alvarez",
-        role: "Environmental Engineering Student",
-        text: "A helpful way to distinguish BOD₅ from COD: BOD₅ relies on aerobic microorganisms over 5 days at 20 °C, so it only captures biodegradable organics, whereas COD uses a strong chemical oxidant (potassium dichromate) and oxidizes nearly all organic matter.",
-        createdAt: "2026-11-15T14:20:00.000Z",
-        helpful: 4
-      },
-      {
-        id: "seed-e5",
-        questionNumber: 5,
-        author: "K. Tanaka",
-        role: "Water Quality Analyst",
-        text: "Since pH = -log10[H+], pH 8 corresponds to [H+] = 10^-8 M and pH 6 corresponds to [H+] = 10^-6 M. Dividing 10^-6 by 10^-8 gives 10^2 = 100 times higher hydrogen ion concentration.",
-        createdAt: "2026-11-16T09:05:00.000Z",
-        helpful: 3
-      }
-    ],
-    "2026-11-15-intermediate": [
-      {
-        id: "seed-i1",
-        questionNumber: 1,
-        author: "R. Patel",
-        role: "Wastewater Process Engineer",
-        text: "Watch the unit conversion shortcut: 1 mg/L = 1 g/m³ = 0.001 kg/m³. So 3,000 mg/L = 3 kg/m³ and 10,000 mg/L = 10 kg/m³. Total reactor solids = 2,000 × 3 = 6,000 kg; wasted solids = 40 × 10 = 400 kg/d. SRT = 6,000 / 400 = 15 days.",
-        createdAt: "2026-11-15T16:45:00.000Z",
-        helpful: 6
-      }
-    ],
-    "2026-11-15-hard": [
-      {
-        id: "seed-h1",
-        questionNumber: 1,
-        author: "S. Lindqvist",
-        role: "Graduate Researcher",
-        text: "In an MLE system, internal recycle brings nitrate back to the anoxic zone. If DO in the aerobic zone is set too high, dissolved oxygen gets recycled into the anoxic zone too, and heterotrophs preferentially use O₂ instead of NO₃⁻ as the electron acceptor.",
-        createdAt: "2026-11-16T11:30:00.000Z",
-        helpful: 5
-      }
-    ]
-  };
-
-  // Application state
   const state = {
-    activeCategory: "easy",
+    activeCategory: loadJsonStorage(STORAGE_LEVEL_KEY, "easy"),
     activeSetId: null,
-    forumFilterQuestion: "all", // "all" or 1..5
-    focusedQuestionIndex: null,
+    currentIndex: 0, // 0..n-1 = question, n = summary
+    forumFilterQuestion: "all",
     answersBySet: loadJsonStorage(STORAGE_ANSWERS_KEY, {}),
     votedPosts: loadJsonStorage(STORAGE_VOTED_POSTS_KEY, {}),
     forumPosts: [],
     firebaseDb: null,
     firebaseMod: null,
-    isFirebaseReady: false
+    isFirebaseReady: false,
+    isGiscus: false,
+    lastRenderKey: ""
   };
 
-  // DOM References
+  const $ = (id) => document.getElementById(id);
   const els = {
-    siteTitle: document.getElementById("site-title"),
-    siteSubtitle: document.getElementById("site-subtitle"),
-    scheduleNote: document.getElementById("schedule-note"),
-    footerText: document.getElementById("footer-text"),
+    eyebrow: $("site-eyebrow"),
+    footerText: $("footer-text"),
+    levelBtns: document.querySelectorAll(".level-btn"),
+    taglines: document.querySelectorAll("[data-tagline]"),
     categoryTabs: document.querySelectorAll(".category-tab"),
-    weekSelect: document.getElementById("week-select"),
-    activeSetHeading: document.getElementById("active-set-heading"),
-    activeCategoryDesc: document.getElementById("active-category-desc"),
-    activeSetSubtitle: document.getElementById("active-set-subtitle"),
-    metricAnswered: document.getElementById("metric-answered"),
-    metricScore: document.getElementById("metric-score"),
-    resetQuizBtn: document.getElementById("reset-quiz-btn"),
-    questionsContainer: document.getElementById("questions-container"),
-    quizSummaryContainer: document.getElementById("quiz-summary-container"),
-    forumModeBadge: document.getElementById("forum-mode-badge"),
-    forumScopeSubtitle: document.getElementById("forum-scope-subtitle"),
-    forumGiscusContainer: document.getElementById("forum-giscus-container"),
-    forumStandardUi: document.getElementById("forum-standard-ui"),
-    forumFilterBar: document.getElementById("forum-filter-bar"),
-    forumLocalNotice: document.getElementById("forum-local-notice"),
-    forumForm: document.getElementById("forum-form"),
-    forumQuestionSelect: document.getElementById("forum-question-select"),
-    forumAuthorInput: document.getElementById("forum-author-input"),
-    forumRoleInput: document.getElementById("forum-role-input"),
-    forumTextInput: document.getElementById("forum-text-input"),
-    forumFormStatus: document.getElementById("forum-form-status"),
-    forumSubmitBtn: document.getElementById("forum-submit-btn"),
-    forumPostsList: document.getElementById("forum-posts-list")
+    weekSelect: $("week-select"),
+    score: $("score-display"),
+    dots: $("progress-dots"),
+    stage: $("question-stage"),
+    quiz: $("quiz"),
+    drawer: $("forum-drawer"),
+    backdrop: $("forum-backdrop"),
+    forumClose: $("forum-close"),
+    forumModeBadge: $("forum-mode-badge"),
+    forumGiscusContainer: $("forum-giscus-container"),
+    forumStandardUi: $("forum-standard-ui"),
+    forumFilterBar: $("forum-filter-bar"),
+    forumLocalNotice: $("forum-local-notice"),
+    forumForm: $("forum-form"),
+    forumQuestionSelect: $("forum-question-select"),
+    forumAuthorInput: $("forum-author-input"),
+    forumRoleInput: $("forum-role-input"),
+    forumTextInput: $("forum-text-input"),
+    forumFormStatus: $("forum-form-status"),
+    forumSubmitBtn: $("forum-submit-btn"),
+    forumPostsList: $("forum-posts-list")
   };
 
-  /* -------------------- Initialization -------------------- */
+  /* -------------------- Init -------------------- */
   async function init() {
-    applySiteBranding();
-    seedLocalForumIfNeeded();
+    applyBranding();
     bindEvents();
     await initForumBackend();
-    selectCategory("easy");
+    if (!CONFIG.categories || !CONFIG.categories[state.activeCategory]) state.activeCategory = "easy";
+    selectCategory(state.activeCategory);
   }
 
-  function applySiteBranding() {
-    if (CONFIG.siteTitle) {
-      document.title = CONFIG.siteTitle;
-      els.siteTitle.textContent = CONFIG.siteTitle;
-    }
-    if (CONFIG.siteSubtitle) els.siteSubtitle.textContent = CONFIG.siteSubtitle;
-    if (CONFIG.scheduleNote) els.scheduleNote.textContent = CONFIG.scheduleNote;
+  function applyBranding() {
+    if (CONFIG.siteTitle) document.title = CONFIG.siteTitle;
+    if (CONFIG.eyebrow) els.eyebrow.textContent = CONFIG.eyebrow;
     if (CONFIG.footerText) els.footerText.textContent = CONFIG.footerText;
+    els.taglines.forEach((el) => {
+      const cat = CONFIG.categories && CONFIG.categories[el.dataset.tagline];
+      el.textContent = (cat && cat.tagline) || "";
+    });
   }
 
   function bindEvents() {
-    els.categoryTabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const cat = tab.getAttribute("data-category");
-        selectCategory(cat);
+    els.levelBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selectCategory(btn.dataset.category);
+        els.quiz.scrollIntoView({ behavior: "smooth", block: "start" });
       });
+    });
+
+    els.categoryTabs.forEach((tab) => {
+      tab.addEventListener("click", () => selectCategory(tab.dataset.category));
     });
 
     els.weekSelect.addEventListener("change", () => {
       state.activeSetId = els.weekSelect.value;
-      state.forumFilterQuestion = "all";
-      state.focusedQuestionIndex = null;
-      renderActiveSet();
+      openSetAtFirstUnanswered();
       loadAndRenderForum();
     });
 
-    els.resetQuizBtn.addEventListener("click", () => {
-      const activeSet = getActiveSet();
-      if (!activeSet) return;
-      delete state.answersBySet[activeSet.id];
-      saveJsonStorage(STORAGE_ANSWERS_KEY, state.answersBySet);
-      renderQuestions(activeSet);
-    });
-
+    document.getElementById("home-btn").addEventListener("click", goHome);
+    els.forumClose.addEventListener("click", closeDrawer);
+    els.backdrop.addEventListener("click", closeDrawer);
     els.forumForm.addEventListener("submit", handleForumSubmit);
+
+    document.addEventListener("keydown", handleKeys);
   }
 
-  /* -------------------- Set & Category Selection -------------------- */
+  function handleKeys(e) {
+    if (e.key === "Escape" && els.drawer.classList.contains("open")) {
+      closeDrawer();
+      return;
+    }
+    const tag = (e.target && e.target.tagName) || "";
+    if (/INPUT|TEXTAREA|SELECT/.test(tag) || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (els.drawer.classList.contains("open")) return;
+
+    const set = getActiveSet();
+    if (!set) return;
+    const total = set.questions.length;
+
+    if (e.key === "ArrowRight") { goTo(Math.min(state.currentIndex + 1, total)); return; }
+    if (e.key === "ArrowLeft") { goTo(Math.max(state.currentIndex - 1, 0)); return; }
+
+    if (state.currentIndex < total) {
+      const k = e.key.toUpperCase();
+      let idx = CHOICE_LETTERS.indexOf(k);
+      if (idx === -1 && /^[1-4]$/.test(k)) idx = Number(k) - 1;
+      if (idx >= 0) {
+        const q = set.questions[state.currentIndex];
+        if (q && idx < q.choices.length) answer(set, q, idx);
+      }
+    }
+  }
+
+  /* -------------------- Sets -------------------- */
   function getSetsForCategory(category) {
     return QUESTION_BANK
       .filter((s) => s.category === category)
@@ -161,15 +142,18 @@
     return sets.find((s) => s.id === state.activeSetId) || sets[0] || null;
   }
 
+  function getAnswers(set) {
+    return state.answersBySet[set.id] || {};
+  }
+
   function selectCategory(category) {
     state.activeCategory = category;
-    state.forumFilterQuestion = "all";
-    state.focusedQuestionIndex = null;
+    saveJsonStorage(STORAGE_LEVEL_KEY, category);
 
     els.categoryTabs.forEach((tab) => {
-      const isSelected = tab.getAttribute("data-category") === category;
-      tab.classList.toggle("active", isSelected);
-      tab.setAttribute("aria-selected", isSelected ? "true" : "false");
+      const on = tab.dataset.category === category;
+      tab.classList.toggle("active", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
     });
 
     const sets = getSetsForCategory(category);
@@ -177,270 +161,299 @@
 
     if (sets.length === 0) {
       const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "No sets published yet";
+      opt.textContent = "No sets yet";
       els.weekSelect.appendChild(opt);
+      els.weekSelect.disabled = true;
       state.activeSetId = null;
     } else {
+      els.weekSelect.disabled = sets.length < 2;
       sets.forEach((s) => {
         const opt = document.createElement("option");
         opt.value = s.id;
-        opt.textContent = `${s.weekLabel} — ${formatSundayDate(s.weekDate)}`;
+        opt.textContent = `${s.weekLabel} · ${formatShortDate(s.weekDate)}`;
         els.weekSelect.appendChild(opt);
       });
       state.activeSetId = sets[0].id;
     }
 
-    renderActiveSet();
+    openSetAtFirstUnanswered();
     loadAndRenderForum();
   }
 
-  function renderActiveSet() {
-    const catMeta = (CONFIG.categories && CONFIG.categories[state.activeCategory]) || {
-      label: state.activeCategory,
-      description: ""
-    };
-    const activeSet = getActiveSet();
+  function openSetAtFirstUnanswered() {
+    const set = getActiveSet();
+    if (!set) {
+      state.currentIndex = 0;
+      render();
+      return;
+    }
+    const answers = getAnswers(set);
+    const first = set.questions.findIndex((q) => !Object.prototype.hasOwnProperty.call(answers, q.id));
+    state.currentIndex = first === -1 ? set.questions.length : first;
+    render();
+  }
 
-    els.activeCategoryDesc.textContent = catMeta.description || "";
+  function goHome() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-    if (!activeSet) {
-      els.activeSetHeading.textContent = `${catMeta.label} — No Question Set Available`;
-      els.activeSetSubtitle.textContent = "";
-      els.questionsContainer.innerHTML =
-        `<div class="empty-state">No question set has been uploaded for this category yet. Check back on Sunday.</div>`;
-      els.quizSummaryContainer.innerHTML = "";
-      els.metricAnswered.textContent = "0 / 0";
-      els.metricScore.textContent = "0 / 0";
-      els.resetQuizBtn.disabled = true;
+  function goTo(index) {
+    if (index === state.currentIndex) return;
+    state.currentIndex = index;
+    render();
+  }
+
+  /* -------------------- Rendering -------------------- */
+  function render() {
+    const set = getActiveSet();
+    els.stage.innerHTML = "";
+    els.dots.innerHTML = "";
+
+    if (!set) {
+      els.score.textContent = "–";
+      const empty = el("div", "card empty", "No questions yet. Check back Sunday.");
+      els.stage.appendChild(empty);
       return;
     }
 
-    els.activeSetHeading.textContent = `${catMeta.label} • ${activeSet.weekLabel} (${formatSundayDate(activeSet.weekDate)})`;
-    els.activeSetSubtitle.textContent = activeSet.title || "";
-    renderQuestions(activeSet);
-  }
-
-  /* -------------------- Quiz Rendering & Answer Reveal -------------------- */
-  function renderQuestions(activeSet) {
-    const setAnswers = state.answersBySet[activeSet.id] || {};
-    const questions = activeSet.questions || [];
-    const total = questions.length;
-
-    let answeredCount = 0;
-    let correctCount = 0;
-
-    els.questionsContainer.innerHTML = "";
-
-    questions.forEach((q, qIdx) => {
-      const qNum = qIdx + 1;
-      const chosenIdx = Object.prototype.hasOwnProperty.call(setAnswers, q.id)
-        ? setAnswers[q.id]
-        : null;
-      const isAnswered = chosenIdx !== null && chosenIdx !== undefined;
-      const isCorrect = isAnswered && chosenIdx === q.correctIndex;
-
-      if (isAnswered) {
-        answeredCount++;
-        if (isCorrect) correctCount++;
-      }
-
-      const card = document.createElement("article");
-      card.className = "question-card";
-      if (state.focusedQuestionIndex === qNum) {
-        card.classList.add("forum-focused");
-      }
-      card.id = `question-card-${qNum}`;
-
-      // Header
-      const header = document.createElement("div");
-      header.className = "question-header";
-
-      const meta = document.createElement("div");
-      meta.className = "question-meta";
-
-      const numSpan = document.createElement("span");
-      numSpan.className = "question-number";
-      numSpan.textContent = `Question ${qNum}`;
-      meta.appendChild(numSpan);
-
-      if (q.topic) {
-        const topicSpan = document.createElement("span");
-        topicSpan.className = "question-topic";
-        topicSpan.textContent = q.topic;
-        meta.appendChild(topicSpan);
-      }
-
-      const discussBtn = document.createElement("button");
-      discussBtn.type = "button";
-      discussBtn.className = "btn-link-subtle";
-      discussBtn.textContent = "Discuss in Side Forum";
-      discussBtn.addEventListener("click", () => focusForumOnQuestion(qNum));
-
-      header.appendChild(meta);
-      header.appendChild(discussBtn);
-      card.appendChild(header);
-
-      // Prompt
-      const promptEl = document.createElement("p");
-      promptEl.className = "question-prompt";
-      promptEl.textContent = q.prompt;
-      card.appendChild(promptEl);
-
-      // Choices
-      const choicesList = document.createElement("div");
-      choicesList.className = "choices-list";
-
-      (q.choices || []).forEach((choiceText, cIdx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "choice-btn";
-        btn.disabled = isAnswered;
-
-        const letter = CHOICE_LETTERS[cIdx] || String(cIdx + 1);
-
-        if (isAnswered) {
-          if (cIdx === q.correctIndex) {
-            btn.classList.add("is-correct");
-          } else if (cIdx === chosenIdx) {
-            btn.classList.add("is-incorrect");
-          } else {
-            btn.classList.add("is-dimmed");
-          }
-        }
-
-        const letterSpan = document.createElement("span");
-        letterSpan.className = "choice-letter";
-        letterSpan.textContent = letter;
-
-        const textSpan = document.createElement("span");
-        textSpan.className = "choice-text";
-        textSpan.textContent = choiceText;
-
-        btn.appendChild(letterSpan);
-        btn.appendChild(textSpan);
-
-        if (isAnswered) {
-          if (cIdx === q.correctIndex && cIdx === chosenIdx) {
-            btn.appendChild(createBadge("✓ Your Answer — Correct"));
-          } else if (cIdx === q.correctIndex) {
-            btn.appendChild(createBadge("✓ Correct Answer"));
-          } else if (cIdx === chosenIdx) {
-            btn.appendChild(createBadge("✕ Your Answer"));
-          }
-        }
-
-        btn.addEventListener("click", () => handleSelectChoice(activeSet, q.id, cIdx));
-        choicesList.appendChild(btn);
-      });
-
-      card.appendChild(choicesList);
-
-      // Immediate Answer Feedback
-      if (isAnswered) {
-        const fb = document.createElement("div");
-        fb.className = `answer-feedback ${isCorrect ? "correct-feedback" : "incorrect-feedback"}`;
-
-        const fbHeader = document.createElement("div");
-        fbHeader.className = "answer-feedback-header";
-
-        const correctLetter = CHOICE_LETTERS[q.correctIndex] || String(q.correctIndex + 1);
-        const statusText = document.createElement("span");
-        statusText.textContent = isCorrect
-          ? `Correct! The answer is ${correctLetter}.`
-          : `Incorrect. The correct answer is ${correctLetter}.`;
-
-        fbHeader.appendChild(statusText);
-        fb.appendChild(fbHeader);
-
-        if (q.instructorNote) {
-          const note = document.createElement("p");
-          note.className = "answer-note";
-          note.textContent = q.instructorNote;
-          fb.appendChild(note);
-        }
-
-        const forumLink = document.createElement("button");
-        forumLink.type = "button";
-        forumLink.className = "btn-link-subtle";
-        forumLink.style.paddingLeft = "0";
-        forumLink.textContent = `View or share an explanation for Question ${qNum} →`;
-        forumLink.addEventListener("click", () => focusForumOnQuestion(qNum));
-        fb.appendChild(forumLink);
-
-        card.appendChild(fb);
-      }
-
-      els.questionsContainer.appendChild(card);
+    const answers = getAnswers(set);
+    const total = set.questions.length;
+    let correct = 0;
+    set.questions.forEach((q) => {
+      if (answers[q.id] === q.correctIndex) correct++;
     });
+    els.score.textContent = `${correct}/${total}`;
 
-    // Update Status Bar & Summary
-    els.metricAnswered.textContent = `${answeredCount} / ${total}`;
-    els.metricScore.textContent = `${correctCount} / ${total}`;
-    els.resetQuizBtn.disabled = answeredCount === 0;
+    renderDots(set, answers);
 
-    if (total > 0 && answeredCount === total) {
-      const pct = Math.round((correctCount / total) * 100);
-      els.quizSummaryContainer.innerHTML = `
-        <div class="quiz-summary-card">
-          <h3>Set Completed — Score: ${correctCount} / ${total} (${pct}%)</h3>
-          <p>
-            Review any missed concepts above, or contribute your step-by-step explanation in the
-            <strong>Peer Explanation Forum</strong> on the right to help fellow learners.
-          </p>
-        </div>
-      `;
+    // Only replay the entrance animation when moving to a different card
+    const key = `${set.id}:${state.currentIndex}`;
+    const animate = key !== state.lastRenderKey;
+    state.lastRenderKey = key;
+
+    if (state.currentIndex >= total) {
+      renderSummary(set, correct, total);
     } else {
-      els.quizSummaryContainer.innerHTML = "";
+      renderQuestion(set, state.currentIndex, answers);
     }
+    if (!animate && els.stage.firstElementChild) els.stage.firstElementChild.style.animation = "none";
   }
 
-  function createBadge(text) {
-    const span = document.createElement("span");
-    span.className = "choice-badge";
-    span.textContent = text;
-    return span;
+  function renderDots(set, answers) {
+    set.questions.forEach((q, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "dot";
+      dot.setAttribute("aria-label", `Question ${i + 1}`);
+      if (Object.prototype.hasOwnProperty.call(answers, q.id)) {
+        dot.classList.add(answers[q.id] === q.correctIndex ? "is-good" : "is-bad");
+      }
+      if (i === state.currentIndex) {
+        dot.classList.add("is-current");
+        dot.setAttribute("aria-current", "step");
+      }
+      dot.addEventListener("click", () => goTo(i));
+      els.dots.appendChild(dot);
+    });
   }
 
-  function handleSelectChoice(activeSet, questionId, choiceIndex) {
-    if (!state.answersBySet[activeSet.id]) {
-      state.answersBySet[activeSet.id] = {};
+  function renderQuestion(set, index, answers) {
+    const q = set.questions[index];
+    const total = set.questions.length;
+    const qNum = index + 1;
+    const chosen = Object.prototype.hasOwnProperty.call(answers, q.id) ? answers[q.id] : null;
+    const answered = chosen !== null && chosen !== undefined;
+    const isCorrect = answered && chosen === q.correctIndex;
+
+    const card = el("article", "card");
+
+    const meta = el("div", "q-meta");
+    meta.appendChild(el("span", "q-num", `${pad(qNum)} / ${pad(total)}`));
+    if (q.topic) meta.appendChild(el("span", "q-topic", q.topic));
+    card.appendChild(meta);
+
+    card.appendChild(el("h2", "q-prompt", q.prompt));
+
+    const list = el("div", "choices");
+    q.choices.forEach((text, cIdx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice";
+      btn.disabled = answered;
+      if (answered) {
+        if (cIdx === q.correctIndex) btn.classList.add("is-correct");
+        else if (cIdx === chosen) btn.classList.add("is-wrong");
+        else btn.classList.add("is-dim");
+      }
+      btn.appendChild(el("span", "choice-key", CHOICE_LETTERS[cIdx] || String(cIdx + 1)));
+      btn.appendChild(el("span", "choice-text", text));
+      btn.addEventListener("click", () => answer(set, q, cIdx));
+      list.appendChild(btn);
+    });
+    card.appendChild(list);
+
+    if (answered) {
+      const fb = el("div", "feedback");
+      const letter = CHOICE_LETTERS[q.correctIndex] || String(q.correctIndex + 1);
+      fb.appendChild(el("p", `verdict ${isCorrect ? "good" : "bad"}`, isCorrect ? "Correct." : `Not quite — it's ${letter}.`));
+      if (q.instructorNote) fb.appendChild(el("p", "note", q.instructorNote));
+      card.appendChild(fb);
     }
-    // Lock after first selection (until user explicitly resets)
-    if (Object.prototype.hasOwnProperty.call(state.answersBySet[activeSet.id], questionId)) {
-      return;
+
+    const actions = el("div", "q-actions");
+
+    const discuss = el("button", "btn btn-ghost", "Discuss");
+    discuss.type = "button";
+    const n = countPosts(qNum);
+    if (n > 0) discuss.appendChild(el("span", "count", String(n)));
+    discuss.addEventListener("click", () => openDrawer(qNum));
+    actions.appendChild(discuss);
+
+    actions.appendChild(el("span", "spacer"));
+
+    const prev = el("button", "btn btn-ghost", "←");
+    prev.type = "button";
+    prev.setAttribute("aria-label", "Previous question");
+    prev.disabled = index === 0;
+    prev.addEventListener("click", () => goTo(index - 1));
+    actions.appendChild(prev);
+
+    const isLast = index === total - 1;
+    const next = el("button", "btn btn-primary", isLast ? "Finish" : "Next →");
+    next.type = "button";
+    next.disabled = !answered;
+    next.addEventListener("click", () => goTo(index + 1));
+    actions.appendChild(next);
+
+    card.appendChild(actions);
+    els.stage.appendChild(card);
+
+    if (answered && document.activeElement === document.body) next.focus({ preventScroll: true });
+  }
+
+  function renderSummary(set, correct, total) {
+    const answers = getAnswers(set);
+    const answeredCount = set.questions.filter((q) => Object.prototype.hasOwnProperty.call(answers, q.id)).length;
+    const card = el("article", "card summary");
+
+    const pct = total ? correct / total : 0;
+    const R = 62;
+    const C = 2 * Math.PI * R;
+    card.insertAdjacentHTML("beforeend", `
+      <svg class="ring" viewBox="0 0 150 150" role="img" aria-label="Score ${correct} of ${total}">
+        <circle class="ring-track" cx="75" cy="75" r="${R}" fill="none" stroke-width="6" />
+        <circle class="ring-fill" cx="75" cy="75" r="${R}" fill="none" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${C.toFixed(2)}" transform="rotate(-90 75 75)" />
+        <text class="ring-label" x="75" y="85" text-anchor="middle">${correct}/${total}</text>
+      </svg>`);
+
+    const heading = answeredCount < total
+      ? "Not finished yet"
+      : pct === 1 ? "Perfect set." : pct >= 0.6 ? "Nice work." : "Keep going.";
+    card.appendChild(el("h2", "", heading));
+    card.appendChild(el("p", "", answeredCount < total
+      ? `${total - answeredCount} question${total - answeredCount > 1 ? "s" : ""} left.`
+      : "Explain one in the discussion to lock it in."));
+
+    const actions = el("div", "q-actions");
+
+    const home = el("button", "btn btn-ghost", "↑ Home");
+    home.type = "button";
+    home.addEventListener("click", goHome);
+    actions.appendChild(home);
+
+    const review = el("button", "btn btn-ghost", "Review");
+    review.type = "button";
+    review.addEventListener("click", () => goTo(0));
+    actions.appendChild(review);
+
+    const discuss = el("button", "btn btn-ghost", "Discuss");
+    discuss.type = "button";
+    if (state.forumPosts.length) discuss.appendChild(el("span", "count", String(state.forumPosts.length)));
+    discuss.addEventListener("click", () => openDrawer("all"));
+    actions.appendChild(discuss);
+
+    const order = ["easy", "intermediate", "hard"];
+    const nextCat = order[order.indexOf(set.category) + 1];
+    const hasNext = nextCat && getSetsForCategory(nextCat).length > 0;
+
+    const reset = el("button", hasNext ? "btn btn-ghost" : "btn btn-primary", "Try again");
+    reset.type = "button";
+    reset.addEventListener("click", () => {
+      delete state.answersBySet[set.id];
+      saveJsonStorage(STORAGE_ANSWERS_KEY, state.answersBySet);
+      state.currentIndex = 0;
+      render();
+    });
+    actions.appendChild(reset);
+
+    if (hasNext) {
+      const label = (CONFIG.categories && CONFIG.categories[nextCat] && CONFIG.categories[nextCat].label) || nextCat;
+      const next = el("button", "btn btn-primary", `${label} →`);
+      next.type = "button";
+      next.addEventListener("click", () => {
+        selectCategory(nextCat);
+        els.quiz.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      actions.appendChild(next);
     }
-    state.answersBySet[activeSet.id][questionId] = choiceIndex;
+
+    card.appendChild(actions);
+    els.stage.appendChild(card);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const fill = card.querySelector(".ring-fill");
+        if (fill) fill.setAttribute("stroke-dashoffset", (C * (1 - pct)).toFixed(2));
+      });
+    });
+  }
+
+  function answer(set, q, choiceIndex) {
+    if (!state.answersBySet[set.id]) state.answersBySet[set.id] = {};
+    if (Object.prototype.hasOwnProperty.call(state.answersBySet[set.id], q.id)) return;
+    state.answersBySet[set.id][q.id] = choiceIndex;
     saveJsonStorage(STORAGE_ANSWERS_KEY, state.answersBySet);
-    renderQuestions(activeSet);
+    window.dispatchEvent(new CustomEvent("quiz:answer", { detail: { correct: choiceIndex === q.correctIndex } }));
+    render();
   }
 
-  function focusForumOnQuestion(qNum) {
-    state.focusedQuestionIndex = qNum;
+  /* -------------------- Drawer -------------------- */
+  function openDrawer(qNum) {
     state.forumFilterQuestion = qNum;
-    els.forumQuestionSelect.value = String(qNum);
-
-    const activeSet = getActiveSet();
-    if (activeSet) {
-      renderQuestions(activeSet);
-    }
+    if (qNum !== "all") els.forumQuestionSelect.value = String(qNum);
     renderForumFilterBar();
     renderForumPosts();
 
-    if (window.innerWidth <= 960) {
-      document.querySelector(".forum-panel").scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    els.backdrop.hidden = false;
+    document.body.classList.add("drawer-open");
+    els.drawer.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => {
+      els.backdrop.classList.add("show");
+      els.drawer.classList.add("open");
+    });
+    setTimeout(() => els.forumClose.focus({ preventScroll: true }), 50);
   }
 
-  /* -------------------- Side Forum Backends -------------------- */
+  function closeDrawer() {
+    els.drawer.classList.remove("open");
+    els.backdrop.classList.remove("show");
+    els.drawer.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("drawer-open");
+    setTimeout(() => { els.backdrop.hidden = true; }, 250);
+  }
+
+  /* -------------------- Forum backends -------------------- */
   async function initForumBackend() {
     const mode = CONFIG.forumMode || "local";
 
     if (mode === "giscus" && CONFIG.giscus && CONFIG.giscus.repo && CONFIG.giscus.repoId) {
+      state.isGiscus = true;
       els.forumModeBadge.textContent = "GitHub Discussions";
       els.forumModeBadge.classList.add("live");
+      els.forumStandardUi.hidden = true;
       els.forumStandardUi.style.display = "none";
-      els.forumGiscusContainer.style.display = "block";
+      els.forumGiscusContainer.hidden = false;
       return;
     }
 
@@ -452,46 +465,43 @@
         state.firebaseDb = fsMod.getFirestore(fbApp);
         state.firebaseMod = fsMod;
         state.isFirebaseReady = true;
-
-        els.forumModeBadge.textContent = "Live Community Forum";
+        els.forumModeBadge.textContent = "Live";
         els.forumModeBadge.classList.add("live");
-        els.forumLocalNotice.style.display = "none";
+        els.forumLocalNotice.hidden = true;
         return;
       } catch (err) {
         console.warn("Firebase initialization failed, falling back to local mode:", err);
       }
     }
 
-    // Default: Local Preview Mode
-    els.forumModeBadge.textContent = "Local Preview";
+    els.forumModeBadge.textContent = "Local";
     els.forumModeBadge.classList.remove("live");
-    els.forumLocalNotice.style.display = "block";
+    els.forumLocalNotice.hidden = false;
   }
 
   async function loadAndRenderForum() {
-    const activeSet = getActiveSet();
-    if (!activeSet) {
-      els.forumScopeSubtitle.textContent = "Select a weekly question set to view or post explanations.";
-      els.forumPostsList.innerHTML = "";
+    const set = getActiveSet();
+    if (!set) {
+      state.forumPosts = [];
+      renderForumFilterBar();
+      renderForumPosts();
       return;
     }
 
-    const catLabel = (CONFIG.categories && CONFIG.categories[activeSet.category] && CONFIG.categories[activeSet.category].label) || activeSet.category;
-    els.forumScopeSubtitle.textContent = `Topic Thread: ${catLabel} • ${activeSet.weekLabel} (${formatSundayDate(activeSet.weekDate)})`;
-
-    if (CONFIG.forumMode === "giscus" && els.forumGiscusContainer.style.display === "block") {
-      renderGiscusThread(activeSet.id);
+    if (state.isGiscus) {
+      renderGiscusThread(set.id);
       return;
     }
 
     if (state.isFirebaseReady) {
-      await loadFirebasePosts(activeSet.id);
+      await loadFirebasePosts(set.id);
     } else {
-      loadLocalPosts(activeSet.id);
+      loadLocalPosts(set.id);
     }
 
     renderForumFilterBar();
     renderForumPosts();
+    render(); // refresh discussion counts on the card
   }
 
   function renderGiscusThread(setId) {
@@ -508,76 +518,49 @@
     script.setAttribute("data-reactions-enabled", "1");
     script.setAttribute("data-emit-metadata", "0");
     script.setAttribute("data-input-position", "top");
-    script.setAttribute("data-theme", "light");
+    script.setAttribute("data-theme", "dark");
     script.setAttribute("data-lang", "en");
     script.crossOrigin = "anonymous";
     script.async = true;
     els.forumGiscusContainer.appendChild(script);
   }
 
-  function seedLocalForumIfNeeded() {
-    const existing = localStorage.getItem(STORAGE_LOCAL_FORUM_KEY);
-    if (!existing) {
-      saveJsonStorage(STORAGE_LOCAL_FORUM_KEY, SEED_FORUM_POSTS);
-    }
-  }
-
   function loadLocalPosts(setId) {
     const all = loadJsonStorage(STORAGE_LOCAL_FORUM_KEY, {});
-    const posts = Array.isArray(all[setId]) ? all[setId] : [];
-    state.forumPosts = [...posts].sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+    const posts = Array.isArray(all[setId]) ? all[setId].filter((p) => !String(p.id).startsWith("seed-")) : [];
+    state.forumPosts = posts.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
   }
 
   async function loadFirebasePosts(setId) {
     try {
       const { collection, query, where, getDocs } = state.firebaseMod;
-      const colName = (CONFIG.firebase && CONFIG.firebase.collectionName) || "env_eng_explanations";
-      const q = query(collection(state.firebaseDb, colName), where("setId", "==", setId));
+      const q = query(collection(state.firebaseDb, FORUM_COLLECTION), where("setId", "==", setId));
       const snap = await getDocs(q);
       const posts = [];
-      snap.forEach((docSnap) => {
-        posts.push({ id: docSnap.id, ...docSnap.data() });
-      });
+      snap.forEach((docSnap) => posts.push({ id: docSnap.id, ...docSnap.data() }));
       state.forumPosts = posts.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
     } catch (err) {
-      console.error("Failed to fetch Firebase forum posts:", err);
+      console.error("Failed to fetch forum posts:", err);
       state.forumPosts = [];
     }
   }
 
-  function renderForumFilterBar() {
-    const counts = { all: state.forumPosts.length, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    state.forumPosts.forEach((p) => {
-      const qn = Number(p.questionNumber);
-      if (counts[qn] !== undefined) counts[qn]++;
-    });
+  function countPosts(qNum) {
+    return state.forumPosts.filter((p) => Number(p.questionNumber) === qNum).length;
+  }
 
+  function renderForumFilterBar() {
     els.forumFilterBar.innerHTML = "";
-    const filters = [
-      { key: "all", label: `All (${counts.all})` },
-      { key: 1, label: `Q1 (${counts[1]})` },
-      { key: 2, label: `Q2 (${counts[2]})` },
-      { key: 3, label: `Q3 (${counts[3]})` },
-      { key: 4, label: `Q4 (${counts[4]})` },
-      { key: 5, label: `Q5 (${counts[5]})` }
-    ];
+    const filters = [{ key: "all", label: `All ${state.forumPosts.length}` }];
+    for (let i = 1; i <= 5; i++) filters.push({ key: i, label: `Q${i} ${countPosts(i)}` });
 
     filters.forEach((f) => {
-      const btn = document.createElement("button");
+      const btn = el("button", "chip", f.label);
       btn.type = "button";
-      btn.className = "filter-chip";
       if (state.forumFilterQuestion === f.key) btn.classList.add("active");
-      btn.textContent = f.label;
       btn.addEventListener("click", () => {
         state.forumFilterQuestion = f.key;
-        if (f.key !== "all") {
-          els.forumQuestionSelect.value = String(f.key);
-          state.focusedQuestionIndex = f.key;
-        } else {
-          state.focusedQuestionIndex = null;
-        }
-        const activeSet = getActiveSet();
-        if (activeSet) renderQuestions(activeSet);
+        if (f.key !== "all") els.forumQuestionSelect.value = String(f.key);
         renderForumFilterBar();
         renderForumPosts();
       });
@@ -593,66 +576,33 @@
     els.forumPostsList.innerHTML = "";
 
     if (filtered.length === 0) {
-      const msg = state.forumFilterQuestion === "all"
-        ? "No explanations posted for this weekly set yet. Be the first to contribute!"
-        : `No explanations for Question ${state.forumFilterQuestion} yet.`;
-      els.forumPostsList.innerHTML = `<div class="empty-state">${escapeHtml(msg)}</div>`;
+      els.forumPostsList.appendChild(el("div", "empty", "No explanations yet. Be the first."));
       return;
     }
 
     filtered.forEach((post) => {
-      const card = document.createElement("div");
-      card.className = "forum-post";
+      const card = el("div", "post");
 
-      const header = document.createElement("div");
-      header.className = "forum-post-header";
+      const head = el("div", "post-head");
+      const who = el("div");
+      who.appendChild(el("span", "post-author", post.author || "Visitor"));
+      if (post.role) who.appendChild(el("span", "post-role", post.role));
+      head.appendChild(who);
+      head.appendChild(el("span", "post-q", `Q${post.questionNumber}`));
+      card.appendChild(head);
 
-      const authorWrap = document.createElement("div");
-      const authorSpan = document.createElement("span");
-      authorSpan.className = "forum-post-author";
-      authorSpan.textContent = post.author || "Visitor";
-      authorWrap.appendChild(authorSpan);
+      card.appendChild(el("p", "post-text", post.text || ""));
 
-      if (post.role) {
-        const roleSpan = document.createElement("span");
-        roleSpan.className = "forum-post-role";
-        roleSpan.textContent = `• ${post.role}`;
-        authorWrap.appendChild(roleSpan);
-      }
-
-      const qBadge = document.createElement("span");
-      qBadge.className = "forum-post-qbadge";
-      qBadge.textContent = `Question ${post.questionNumber}`;
-
-      header.appendChild(authorWrap);
-      header.appendChild(qBadge);
-      card.appendChild(header);
-
-      const body = document.createElement("p");
-      body.className = "forum-post-text";
-      body.textContent = post.text || "";
-      card.appendChild(body);
-
-      const footer = document.createElement("div");
-      footer.className = "forum-post-footer";
-
-      const dateSpan = document.createElement("span");
-      dateSpan.textContent = formatTimestamp(post.createdAt);
-
-      const helpfulBtn = document.createElement("button");
-      helpfulBtn.type = "button";
-      helpfulBtn.className = "helpful-btn";
-      const hasVoted = Boolean(state.votedPosts[post.id]);
-      if (hasVoted) {
-        helpfulBtn.classList.add("voted");
-        helpfulBtn.disabled = true;
-      }
-      helpfulBtn.textContent = `Helpful (${post.helpful || 0})`;
-      helpfulBtn.addEventListener("click", () => handleHelpfulVote(post));
-
-      footer.appendChild(dateSpan);
-      footer.appendChild(helpfulBtn);
-      card.appendChild(footer);
+      const foot = el("div", "post-foot");
+      foot.appendChild(el("span", "", formatShortDate(post.createdAt)));
+      const voted = Boolean(state.votedPosts[post.id]);
+      const helpful = el("button", "helpful", `${voted ? "▲" : "△"} ${post.helpful || 0}`);
+      helpful.type = "button";
+      helpful.title = "Helpful";
+      helpful.disabled = voted;
+      helpful.addEventListener("click", () => handleHelpfulVote(post));
+      foot.appendChild(helpful);
+      card.appendChild(foot);
 
       els.forumPostsList.appendChild(card);
     });
@@ -660,8 +610,8 @@
 
   async function handleForumSubmit(e) {
     e.preventDefault();
-    const activeSet = getActiveSet();
-    if (!activeSet) return;
+    const set = getActiveSet();
+    if (!set) return;
 
     const questionNumber = Number(els.forumQuestionSelect.value);
     const author = els.forumAuthorInput.value.trim();
@@ -669,15 +619,15 @@
     const text = els.forumTextInput.value.trim();
 
     if (!author || !text) {
-      els.forumFormStatus.textContent = "Please provide your name and explanation.";
+      els.forumFormStatus.textContent = "Name and explanation, please.";
       return;
     }
 
     els.forumSubmitBtn.disabled = true;
-    els.forumFormStatus.textContent = "Posting...";
+    els.forumFormStatus.textContent = "Posting…";
 
     const newPost = {
-      setId: activeSet.id,
+      setId: set.id,
       questionNumber,
       author,
       role,
@@ -689,32 +639,26 @@
     try {
       if (state.isFirebaseReady) {
         const { collection, addDoc } = state.firebaseMod;
-        const colName = (CONFIG.firebase && CONFIG.firebase.collectionName) || "env_eng_explanations";
-        await addDoc(collection(state.firebaseDb, colName), newPost);
-        await loadFirebasePosts(activeSet.id);
+        await addDoc(collection(state.firebaseDb, FORUM_COLLECTION), newPost);
+        await loadFirebasePosts(set.id);
       } else {
         const all = loadJsonStorage(STORAGE_LOCAL_FORUM_KEY, {});
-        if (!Array.isArray(all[activeSet.id])) all[activeSet.id] = [];
-        all[activeSet.id].unshift({
-          id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          ...newPost
-        });
+        if (!Array.isArray(all[set.id])) all[set.id] = [];
+        all[set.id].unshift({ id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, ...newPost });
         saveJsonStorage(STORAGE_LOCAL_FORUM_KEY, all);
-        loadLocalPosts(activeSet.id);
+        loadLocalPosts(set.id);
       }
 
       els.forumTextInput.value = "";
-      els.forumFormStatus.textContent = "Explanation posted.";
+      els.forumFormStatus.textContent = "Posted.";
       state.forumFilterQuestion = questionNumber;
       renderForumFilterBar();
       renderForumPosts();
-
-      setTimeout(() => {
-        els.forumFormStatus.textContent = "";
-      }, 3000);
+      render();
+      setTimeout(() => { els.forumFormStatus.textContent = ""; }, 2500);
     } catch (err) {
       console.error("Error posting explanation:", err);
-      els.forumFormStatus.textContent = "Could not post right now. Please try again.";
+      els.forumFormStatus.textContent = "Couldn't post. Try again.";
     } finally {
       els.forumSubmitBtn.disabled = false;
     }
@@ -722,8 +666,8 @@
 
   async function handleHelpfulVote(post) {
     if (state.votedPosts[post.id]) return;
-    const activeSet = getActiveSet();
-    if (!activeSet) return;
+    const set = getActiveSet();
+    if (!set) return;
 
     state.votedPosts[post.id] = true;
     saveJsonStorage(STORAGE_VOTED_POSTS_KEY, state.votedPosts);
@@ -731,18 +675,14 @@
     if (state.isFirebaseReady) {
       try {
         const { doc, updateDoc, increment } = state.firebaseMod;
-        const colName = (CONFIG.firebase && CONFIG.firebase.collectionName) || "env_eng_explanations";
-        await updateDoc(doc(state.firebaseDb, colName, post.id), {
-          helpful: increment(1)
-        });
+        await updateDoc(doc(state.firebaseDb, FORUM_COLLECTION, post.id), { helpful: increment(1) });
         post.helpful = (post.helpful || 0) + 1;
       } catch (err) {
         console.error("Failed to update helpful count:", err);
       }
     } else {
       const all = loadJsonStorage(STORAGE_LOCAL_FORUM_KEY, {});
-      const list = all[activeSet.id] || [];
-      const target = list.find((item) => item.id === post.id);
+      const target = (all[set.id] || []).find((item) => item.id === post.id);
       if (target) {
         target.helpful = (target.helpful || 0) + 1;
         saveJsonStorage(STORAGE_LOCAL_FORUM_KEY, all);
@@ -754,29 +694,24 @@
   }
 
   /* -------------------- Utilities -------------------- */
-  function formatSundayDate(isoDate) {
-    if (!isoDate) return "";
-    const parts = isoDate.split("-");
-    if (parts.length !== 3) return isoDate;
-    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-    if (Number.isNaN(d.getTime())) return isoDate;
-    return d.toLocaleDateString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    });
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
   }
 
-  function formatTimestamp(isoString) {
-    if (!isoString) return "";
-    const d = new Date(isoString);
-    if (Number.isNaN(d.getTime())) return "";
-    return d.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    });
+  function pad(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function formatShortDate(value) {
+    if (!value) return "";
+    let d;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(value);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }
 
   function loadJsonStorage(key, fallback) {
@@ -792,17 +727,8 @@
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch {
-      // Ignore storage quota errors cleanly
+      // storage unavailable (private mode etc.) — app still works for this visit
     }
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
   }
 
   document.addEventListener("DOMContentLoaded", init);

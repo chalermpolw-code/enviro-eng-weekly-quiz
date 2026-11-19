@@ -3,155 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Environmental Engineering Weekly Review</title>
+  <title>Environmental Engineering Weekly</title>
+  <meta name="description" content="Five environmental engineering questions every Sunday, with a peer discussion forum." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <div class="brand-mark" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-            <path d="M9.5 14.5c1.5-2 3.5-2.5 5-3.5"></path>
-          </svg>
-        </div>
-        <div>
-          <h1 class="site-title" id="site-title">Environmental Engineering Weekly Review</h1>
-          <p class="site-subtitle" id="site-subtitle">Open-Access Practice Questions &amp; Peer Explanation Forum</p>
-        </div>
-      </div>
-      <div class="schedule-pill" id="schedule-pill">
-        <span aria-hidden="true">&#9679;</span>
-        <span id="schedule-note">New 5-question sets published every Sunday</span>
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <!-- Hero -->
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <p class="eyebrow" id="site-eyebrow">Environmental Engineering</p>
+      <h1 class="hero-title">Five questions.<br /><span>Every Sunday.</span></h1>
+
+      <div class="level-pick" role="group" aria-label="Choose a level">
+        <button type="button" class="level-btn" data-category="easy">
+          <span class="level-name">Easy</span>
+          <span class="level-tag" data-tagline="easy"></span>
+        </button>
+        <button type="button" class="level-btn" data-category="intermediate">
+          <span class="level-name">Intermediate</span>
+          <span class="level-tag" data-tagline="intermediate"></span>
+        </button>
+        <button type="button" class="level-btn" data-category="hard">
+          <span class="level-name">Hard</span>
+          <span class="level-tag" data-tagline="hard"></span>
+        </button>
       </div>
     </div>
+    <a class="scroll-cue" href="#quiz" aria-label="Go to questions"><span></span></a>
   </header>
 
-  <nav class="category-bar" aria-label="Difficulty categories and weekly issue">
-    <div class="category-bar-inner">
-      <div class="category-tabs" role="tablist" aria-label="Question difficulty categories">
-        <button type="button" class="category-tab active" role="tab" aria-selected="true" data-category="easy" id="tab-easy">
-          Easy
-        </button>
-        <button type="button" class="category-tab" role="tab" aria-selected="false" data-category="intermediate" id="tab-intermediate">
-          Intermediate
-        </button>
-        <button type="button" class="category-tab" role="tab" aria-selected="false" data-category="hard" id="tab-hard">
-          Hard / Thought-Provoking
-        </button>
+  <!-- Quiz -->
+  <main class="quiz" id="quiz">
+    <div class="quiz-bar">
+      <div class="quiz-bar-left">
+      <button type="button" class="icon-btn home-btn" id="home-btn" aria-label="Back to start" title="Back to start">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      </button>
+      <div class="seg" role="tablist" aria-label="Level">
+        <button type="button" class="category-tab" role="tab" data-category="easy">Easy</button>
+        <button type="button" class="category-tab" role="tab" data-category="intermediate">Intermediate</button>
+        <button type="button" class="category-tab" role="tab" data-category="hard">Hard</button>
+      </div>
       </div>
 
-      <div class="week-selector-wrap">
-        <label for="week-select">Weekly Release:</label>
-        <select id="week-select" class="form-select"></select>
+      <div class="quiz-bar-right">
+        <label class="sr-only" for="week-select">Week</label>
+        <select id="week-select" class="week-select"></select>
+        <span class="score" id="score-display" aria-live="polite">0/5</span>
       </div>
     </div>
-  </nav>
 
-  <main class="page-container">
-    <section class="category-intro" aria-live="polite">
-      <div>
-        <h2 class="category-intro-title" id="active-set-heading">Loading weekly question set...</h2>
-        <p class="category-intro-desc" id="active-category-desc"></p>
-      </div>
-      <div class="question-topic" id="active-set-subtitle"></div>
-    </section>
+    <div class="progress" id="progress-dots" role="group" aria-label="Questions"></div>
 
-    <div class="workspace-grid">
-      <!-- Left Column: Weekly 5 Multiple-Choice Questions -->
-      <section aria-label="Weekly multiple-choice questions">
-        <div class="quiz-status-bar">
-          <div class="quiz-metrics">
-            <span class="metric-item">Answered: <strong id="metric-answered">0 / 5</strong></span>
-            <span class="metric-item">Score: <strong id="metric-score">0 / 5</strong></span>
-          </div>
-          <button type="button" class="btn btn-secondary" id="reset-quiz-btn" disabled>
-            Reset Answers
-          </button>
-        </div>
-
-        <div id="questions-container"></div>
-        <div id="quiz-summary-container"></div>
-      </section>
-
-      <!-- Right Column: Side Forum for Visitor Explanations -->
-      <aside class="forum-panel" aria-label="Peer Explanation Side Forum">
-        <div class="forum-header">
-          <div class="forum-title-row">
-            <h2 class="forum-title">Peer Explanation Forum</h2>
-            <span class="forum-mode-badge" id="forum-mode-badge">Local Preview</span>
-          </div>
-          <p class="forum-subtitle" id="forum-scope-subtitle">
-            Share your reasoning, derivations, or study notes with other visitors.
-          </p>
-        </div>
-
-        <div id="forum-giscus-container" style="display: none; padding: 1rem;"></div>
-
-        <div id="forum-standard-ui">
-          <div class="forum-filter-bar" id="forum-filter-bar" role="group" aria-label="Filter explanations by question">
-            <!-- Populated dynamically -->
-          </div>
-
-          <div class="forum-body">
-            <div class="forum-notice" id="forum-local-notice" style="display: none;">
-              <strong>Local Preview Mode:</strong> Explanations posted here are saved in your browser.
-              To let all web visitors share explanations publicly for free, configure Firebase or Giscus in <code>config.js</code> (see <code>README.md</code>).
-            </div>
-
-            <form class="forum-form" id="forum-form">
-              <div class="forum-form-row">
-                <div class="form-field">
-                  <label for="forum-question-select">Question</label>
-                  <select id="forum-question-select" class="form-select" required>
-                    <option value="1">Question 1</option>
-                    <option value="2">Question 2</option>
-                    <option value="3">Question 3</option>
-                    <option value="4">Question 4</option>
-                    <option value="5">Question 5</option>
-                  </select>
-                </div>
-                <div class="form-field">
-                  <label for="forum-author-input">Your Name *</label>
-                  <input type="text" id="forum-author-input" class="form-input" placeholder="e.g., Jordan L." maxlength="60" required />
-                </div>
-              </div>
-
-              <div class="form-field">
-                <label for="forum-role-input">Role / Background (optional)</label>
-                <input type="text" id="forum-role-input" class="form-input" placeholder="e.g., Undergraduate, Graduate Student, Water Engineer" maxlength="60" />
-              </div>
-
-              <div class="form-field">
-                <label for="forum-text-input">Explanation *</label>
-                <textarea id="forum-text-input" class="form-textarea" placeholder="Explain why the answer is correct, share calculations, or discuss edge cases..." maxlength="1500" required></textarea>
-              </div>
-
-              <div class="forum-form-actions">
-                <span class="form-status-msg" id="forum-form-status"></span>
-                <button type="submit" class="btn btn-primary" id="forum-submit-btn">Post Explanation</button>
-              </div>
-            </form>
-
-            <div class="forum-posts-list" id="forum-posts-list">
-              <!-- Populated dynamically -->
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
+    <section class="stage" id="question-stage" aria-live="polite"></section>
   </main>
 
   <footer class="site-footer">
-    <span id="footer-text">Environmental Engineering Weekly Review • Free Educational Resource</span>
-    <div class="footer-links">
-      <a href="author.html">Instructor Upload Tool</a>
-    </div>
+    <span id="footer-text">Free · open access</span>
+    <a href="author.html">Instructor</a>
   </footer>
+
+  <!-- Discussion drawer -->
+  <div class="backdrop" id="forum-backdrop" hidden></div>
+  <aside class="drawer" id="forum-drawer" aria-label="Discussion" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <h2 class="drawer-title">Discussion</h2>
+        <span class="mode-badge" id="forum-mode-badge"></span>
+      </div>
+      <button type="button" class="icon-btn" id="forum-close" aria-label="Close discussion">&times;</button>
+    </div>
+
+    <div id="forum-giscus-container" class="giscus-wrap" hidden></div>
+
+    <div id="forum-standard-ui" class="drawer-body">
+      <div class="chips" id="forum-filter-bar" role="group" aria-label="Filter by question"></div>
+
+      <p class="local-note" id="forum-local-notice" hidden>Local mode — posts stay in this browser.</p>
+
+      <div class="posts" id="forum-posts-list"></div>
+
+      <form class="post-form" id="forum-form" autocomplete="off">
+        <div class="form-row">
+          <label class="sr-only" for="forum-question-select">Question</label>
+          <select id="forum-question-select" class="field field-q">
+            <option value="1">Q1</option>
+            <option value="2">Q2</option>
+            <option value="3">Q3</option>
+            <option value="4">Q4</option>
+            <option value="5">Q5</option>
+          </select>
+          <label class="sr-only" for="forum-author-input">Your name</label>
+          <input type="text" id="forum-author-input" class="field" placeholder="Your name" maxlength="60" required />
+          <label class="sr-only" for="forum-role-input">Role (optional)</label>
+          <input type="text" id="forum-role-input" class="field" placeholder="Role (optional)" maxlength="60" />
+        </div>
+        <label class="sr-only" for="forum-text-input">Explanation</label>
+        <textarea id="forum-text-input" class="field field-text" placeholder="Explain your reasoning…" maxlength="1500" required></textarea>
+        <div class="form-actions">
+          <span class="form-status" id="forum-form-status" aria-live="polite"></span>
+          <button type="submit" class="btn btn-primary" id="forum-submit-btn">Post</button>
+        </div>
+      </form>
+    </div>
+  </aside>
 
   <script src="config.js"></script>
   <script src="data/questions.js"></script>
+  <script src="scene.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

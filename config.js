@@ -5,23 +5,25 @@
  */
 window.SITE_CONFIG = {
   // Site branding
-  siteTitle: "Environmental Engineering Weekly Review",
-  siteSubtitle: "Open-Access Practice Questions & Peer Explanation Forum",
-  scheduleNote: "New 5-question sets published every Sunday",
-  footerText: "Environmental Engineering Weekly Review • Free Educational Resource",
+  siteTitle: "Environmental Engineering Weekly",
+  eyebrow: "Environmental Engineering",
+  footerText: "Free · open access",
 
   // Category display metadata
   categories: {
     easy: {
       label: "Easy",
+      tagline: "Fundamentals",
       description: "Core definitions, fundamental principles, and foundational environmental engineering concepts."
     },
     intermediate: {
       label: "Intermediate",
+      tagline: "Calculations",
       description: "Applied calculations, unit conversions, treatment process design, and standard engineering models."
     },
     hard: {
-      label: "Hard / Thought-Provoking",
+      label: "Hard",
+      tagline: "Systems thinking",
       description: "Multi-factor systems thinking, operational troubleshooting, and engineering design trade-offs."
     }
   },
