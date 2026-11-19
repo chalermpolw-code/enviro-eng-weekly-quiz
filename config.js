@@ -42,15 +42,15 @@ window.SITE_CONFIG = {
    *   - Visitors sign in with a free GitHub account to post; everyone can read.
    *   - Fill in giscus settings below and change forumMode to "giscus".
    */
-  forumMode: "local",
+  forumMode: "firebase",
 
   firebase: {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: "",
+    apiKey: "AIzaSyBr-PTPsyZvr_3cZuesWgXMUh2Sn8rAieM",
+    authDomain: "enviro-eng-weekly-quiz.firebaseapp.com",
+    projectId: "enviro-eng-weekly-quiz",
+    storageBucket: "enviro-eng-weekly-quiz.firebasestorage.app",
+    messagingSenderId: "356690048897",
+    appId: "1:356690048897:web:89695059cdcdcfb5905a80",
     collectionName: "env_eng_explanations"
   },
 
