@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Environmental Engineering Weekly Review</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            <path d="M9.5 14.5c1.5-2 3.5-2.5 5-3.5"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="site-title" id="site-title">Environmental Engineering Weekly Review</h1>
+          <p class="site-subtitle" id="site-subtitle">Open-Access Practice Questions &amp; Peer Explanation Forum</p>
+        </div>
+      </div>
+      <div class="schedule-pill" id="schedule-pill">
+        <span aria-hidden="true">&#9679;</span>
+        <span id="schedule-note">New 5-question sets published every Sunday</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="category-bar" aria-label="Difficulty categories and weekly issue">
+    <div class="category-bar-inner">
+      <div class="category-tabs" role="tablist" aria-label="Question difficulty categories">
+        <button type="button" class="category-tab active" role="tab" aria-selected="true" data-category="easy" id="tab-easy">
+          Easy
+        </button>
+        <button type="button" class="category-tab" role="tab" aria-selected="false" data-category="intermediate" id="tab-intermediate">
+          Intermediate
+        </button>
+        <button type="button" class="category-tab" role="tab" aria-selected="false" data-category="hard" id="tab-hard">
+          Hard / Thought-Provoking
+        </button>
+      </div>
+
+      <div class="week-selector-wrap">
+        <label for="week-select">Weekly Release:</label>
+        <select id="week-select" class="form-select"></select>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-container">
+    <section class="category-intro" aria-live="polite">
+      <div>
+        <h2 class="category-intro-title" id="active-set-heading">Loading weekly question set...</h2>
+        <p class="category-intro-desc" id="active-category-desc"></p>
+      </div>
+      <div class="question-topic" id="active-set-subtitle"></div>
+    </section>
+
+    <div class="workspace-grid">
+      <!-- Left Column: Weekly 5 Multiple-Choice Questions -->
+      <section aria-label="Weekly multiple-choice questions">
+        <div class="quiz-status-bar">
+          <div class="quiz-metrics">
+            <span class="metric-item">Answered: <strong id="metric-answered">0 / 5</strong></span>
+            <span class="metric-item">Score: <strong id="metric-score">0 / 5</strong></span>
+          </div>
+          <button type="button" class="btn btn-secondary" id="reset-quiz-btn" disabled>
+            Reset Answers
+          </button>
+        </div>
+
+        <div id="questions-container"></div>
+        <div id="quiz-summary-container"></div>
+      </section>
+
+      <!-- Right Column: Side Forum for Visitor Explanations -->
+      <aside class="forum-panel" aria-label="Peer Explanation Side Forum">
+        <div class="forum-header">
+          <div class="forum-title-row">
+            <h2 class="forum-title">Peer Explanation Forum</h2>
+            <span class="forum-mode-badge" id="forum-mode-badge">Local Preview</span>
+          </div>
+          <p class="forum-subtitle" id="forum-scope-subtitle">
+            Share your reasoning, derivations, or study notes with other visitors.
+          </p>
+        </div>
+
+        <div id="forum-giscus-container" style="display: none; padding: 1rem;"></div>
+
+        <div id="forum-standard-ui">
+          <div class="forum-filter-bar" id="forum-filter-bar" role="group" aria-label="Filter explanations by question">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="forum-body">
+            <div class="forum-notice" id="forum-local-notice" style="display: none;">
+              <strong>Local Preview Mode:</strong> Explanations posted here are saved in your browser.
+              To let all web visitors share explanations publicly for free, configure Firebase or Giscus in <code>config.js</code> (see <code>README.md</code>).
+            </div>
+
+            <form class="forum-form" id="forum-form">
+              <div class="forum-form-row">
+                <div class="form-field">
+                  <label for="forum-question-select">Question</label>
+                  <select id="forum-question-select" class="form-select" required>
+                    <option value="1">Question 1</option>
+                    <option value="2">Question 2</option>
+                    <option value="3">Question 3</option>
+                    <option value="4">Question 4</option>
+                    <option value="5">Question 5</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="forum-author-input">Your Name *</label>
+                  <input type="text" id="forum-author-input" class="form-input" placeholder="e.g., Jordan L." maxlength="60" required />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="forum-role-input">Role / Background (optional)</label>
+                <input type="text" id="forum-role-input" class="form-input" placeholder="e.g., Undergraduate, Graduate Student, Water Engineer" maxlength="60" />
+              </div>
+
+              <div class="form-field">
+                <label for="forum-text-input">Explanation *</label>
+                <textarea id="forum-text-input" class="form-textarea" placeholder="Explain why the answer is correct, share calculations, or discuss edge cases..." maxlength="1500" required></textarea>
+              </div>
+
+              <div class="forum-form-actions">
+                <span class="form-status-msg" id="forum-form-status"></span>
+                <button type="submit" class="btn btn-primary" id="forum-submit-btn">Post Explanation</button>
+              </div>
+            </form>
+
+            <div class="forum-posts-list" id="forum-posts-list">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span id="footer-text">Environmental Engineering Weekly Review • Free Educational Resource</span>
+    <div class="footer-links">
+      <a href="author.html">Instructor Upload Tool</a>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
