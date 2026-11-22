@@ -79,6 +79,16 @@ Firebase's **Spark Plan** is `$0/month` (free tier includes 50,000 reads/day and
          allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['helpful'])
            && request.resource.data.helpful == resource.data.helpful + 1;
        }
+       // Anonymous visitor counter (the small "Visitors" box on the home page)
+       match /site_stats/{docId} {
+         allow read: if true;
+         allow create: if docId == 'visitors'
+           && request.resource.data.keys().hasOnly(['count'])
+           && request.resource.data.count == 1;
+         allow update: if docId == 'visitors'
+           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+           && request.resource.data.count == resource.data.count + 1;
+       }
      }
    }
    ```

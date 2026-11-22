@@ -10,12 +10,16 @@
   const STORAGE_LOCAL_FORUM_KEY = "env_eng_local_forum_v1";
   const STORAGE_VOTED_POSTS_KEY = "env_eng_forum_voted_v1";
   const STORAGE_LEVEL_KEY = "env_eng_last_level_v1";
+  const STORAGE_VISIT_COUNTED_KEY = "env_eng_visit_counted_v1";
+  const SESSION_NOTICE_KEY = "env_eng_notice_ok_v1";
+  const STATS_COLLECTION = "site_stats";
+  const STATS_DOC = "visitors";
   const CHOICE_LETTERS = ["A", "B", "C", "D"];
   const FORUM_COLLECTION = (CONFIG.firebase && CONFIG.firebase.collectionName) || "env_eng_explanations";
 
   const state = {
     activeCategory: loadJsonStorage(STORAGE_LEVEL_KEY, "easy"),
-    activeSetId: null,
+    activeWeek: null, // weekDate (YYYY-MM-DD) of the chosen weekly release
     currentIndex: 0, // 0..n-1 = question, n = summary
     forumFilterQuestion: "all",
     answersBySet: loadJsonStorage(STORAGE_ANSWERS_KEY, {}),
@@ -25,6 +29,7 @@
     firebaseMod: null,
     isFirebaseReady: false,
     isGiscus: false,
+    backendReady: false,
     lastRenderKey: ""
   };
 
@@ -36,6 +41,12 @@
     taglines: document.querySelectorAll("[data-tagline]"),
     categoryTabs: document.querySelectorAll(".category-tab"),
     weekSelect: $("week-select"),
+    heroWeekSelect: $("hero-week-select"),
+    visitorBox: $("visitor-box"),
+    visitorCount: $("visitor-count"),
+    noticeOverlay: $("notice-overlay"),
+    noticeOk: $("notice-ok"),
+    noticeReopen: $("notice-reopen"),
     score: $("score-display"),
     dots: $("progress-dots"),
     stage: $("question-stage"),
@@ -61,16 +72,27 @@
   /* -------------------- Init -------------------- */
   async function init() {
     applyBranding();
+    initNotice();
     bindEvents();
-    await initForumBackend();
+    populateWeekSelects();
     if (!CONFIG.categories || !CONFIG.categories[state.activeCategory]) state.activeCategory = "easy";
     selectCategory(state.activeCategory);
+    await initForumBackend();
+    loadAndRenderForum();
+    initVisitorCounter();
   }
 
   function applyBranding() {
     if (CONFIG.siteTitle) document.title = CONFIG.siteTitle;
     if (CONFIG.eyebrow) els.eyebrow.textContent = CONFIG.eyebrow;
     if (CONFIG.footerText) els.footerText.textContent = CONFIG.footerText;
+    const holder = CONFIG.copyrightHolder || CONFIG.siteTitle || "Environmental Engineering Weekly";
+    const startYear = Number(CONFIG.copyrightStartYear) || new Date().getFullYear();
+    const nowYear = new Date().getFullYear();
+    const years = nowYear > startYear ? `${startYear}–${nowYear}` : String(startYear);
+    document.querySelectorAll(".copyright-line").forEach((node) => {
+      node.textContent = `© ${years} ${holder}. All rights reserved.`;
+    });
     els.taglines.forEach((el) => {
       const cat = CONFIG.categories && CONFIG.categories[el.dataset.tagline];
       el.textContent = (cat && cat.tagline) || "";
@@ -89,10 +111,8 @@
       tab.addEventListener("click", () => selectCategory(tab.dataset.category));
     });
 
-    els.weekSelect.addEventListener("change", () => {
-      state.activeSetId = els.weekSelect.value;
-      openSetAtFirstUnanswered();
-      loadAndRenderForum();
+    [els.weekSelect, els.heroWeekSelect].forEach((select) => {
+      select.addEventListener("change", () => selectWeek(select.value));
     });
 
     document.getElementById("home-btn").addEventListener("click", goHome);
@@ -104,6 +124,7 @@
   }
 
   function handleKeys(e) {
+    if (!els.noticeOverlay.hidden) return; // notice must be acknowledged first
     if (e.key === "Escape" && els.drawer.classList.contains("open")) {
       closeDrawer();
       return;
@@ -130,16 +151,74 @@
     }
   }
 
-  /* -------------------- Sets -------------------- */
-  function getSetsForCategory(category) {
-    return QUESTION_BANK
-      .filter((s) => s.category === category)
-      .sort((a, b) => (b.weekDate || "").localeCompare(a.weekDate || ""));
+  /* -------------------- Weeks & sets -------------------- */
+  function todayIso() {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  // Released weeks only (sets dated in the future stay hidden until that day), newest first.
+  function getReleasedWeeks() {
+    const today = todayIso();
+    const weeks = new Set();
+    QUESTION_BANK.forEach((s) => {
+      if (s.weekDate && s.weekDate <= today) weeks.add(s.weekDate);
+    });
+    return Array.from(weeks).sort((a, b) => b.localeCompare(a));
+  }
+
+  function weekNumber(weekDate) {
+    const start = parseIsoDate(CONFIG.week1Date);
+    const d = parseIsoDate(weekDate);
+    if (!start || !d) return null;
+    return Math.floor(Math.round((d - start) / 86400000) / 7) + 1;
+  }
+
+  function weekLabel(weekDate) {
+    const n = weekNumber(weekDate);
+    if (n && n >= 1) return `Week ${n}`;
+    const set = QUESTION_BANK.find((s) => s.weekDate === weekDate);
+    return (set && set.weekLabel) || "Week";
+  }
+
+  function populateWeekSelects() {
+    const weeks = getReleasedWeeks();
+    if (!weeks.includes(state.activeWeek)) state.activeWeek = weeks[0] || null;
+
+    [els.weekSelect, els.heroWeekSelect].forEach((select) => {
+      select.innerHTML = "";
+      if (weeks.length === 0) {
+        const opt = document.createElement("option");
+        opt.textContent = "No sets yet";
+        select.appendChild(opt);
+        select.disabled = true;
+        return;
+      }
+      select.disabled = false;
+      weeks.forEach((w, i) => {
+        const opt = document.createElement("option");
+        opt.value = w;
+        opt.textContent = `${weekLabel(w)} · ${formatShortDate(w)}${i === 0 ? " (latest)" : ""}`;
+        select.appendChild(opt);
+      });
+      select.value = state.activeWeek;
+    });
+  }
+
+  function selectWeek(weekDate) {
+    state.activeWeek = weekDate;
+    els.weekSelect.value = weekDate;
+    els.heroWeekSelect.value = weekDate;
+    openSetAtFirstUnanswered();
+    loadAndRenderForum();
+  }
+
+  function getSet(category, weekDate) {
+    return QUESTION_BANK.find((s) => s.category === category && s.weekDate === weekDate) || null;
   }
 
   function getActiveSet() {
-    const sets = getSetsForCategory(state.activeCategory);
-    return sets.find((s) => s.id === state.activeSetId) || sets[0] || null;
+    return getSet(state.activeCategory, state.activeWeek);
   }
 
   function getAnswers(set) {
@@ -155,26 +234,6 @@
       tab.classList.toggle("active", on);
       tab.setAttribute("aria-selected", on ? "true" : "false");
     });
-
-    const sets = getSetsForCategory(category);
-    els.weekSelect.innerHTML = "";
-
-    if (sets.length === 0) {
-      const opt = document.createElement("option");
-      opt.textContent = "No sets yet";
-      els.weekSelect.appendChild(opt);
-      els.weekSelect.disabled = true;
-      state.activeSetId = null;
-    } else {
-      els.weekSelect.disabled = sets.length < 2;
-      sets.forEach((s) => {
-        const opt = document.createElement("option");
-        opt.value = s.id;
-        opt.textContent = `${s.weekLabel} · ${formatShortDate(s.weekDate)}`;
-        els.weekSelect.appendChild(opt);
-      });
-      state.activeSetId = sets[0].id;
-    }
 
     openSetAtFirstUnanswered();
     loadAndRenderForum();
@@ -211,7 +270,11 @@
 
     if (!set) {
       els.score.textContent = "–";
-      const empty = el("div", "card empty", "No questions yet. Check back Sunday.");
+      const label = (CONFIG.categories && CONFIG.categories[state.activeCategory] && CONFIG.categories[state.activeCategory].label) || "this level";
+      const msg = state.activeWeek
+        ? `No ${label} questions for ${weekLabel(state.activeWeek)}. Try another level or week.`
+        : "No questions yet. Check back Sunday.";
+      const empty = el("div", "card empty", msg);
       els.stage.appendChild(empty);
       return;
     }
@@ -375,7 +438,7 @@
 
     const order = ["easy", "intermediate", "hard"];
     const nextCat = order[order.indexOf(set.category) + 1];
-    const hasNext = nextCat && getSetsForCategory(nextCat).length > 0;
+    const hasNext = Boolean(nextCat && getSet(nextCat, set.weekDate));
 
     const reset = el("button", hasNext ? "btn btn-ghost" : "btn btn-primary", "Try again");
     reset.type = "button";
@@ -445,6 +508,14 @@
 
   /* -------------------- Forum backends -------------------- */
   async function initForumBackend() {
+    try {
+      await initForumBackendMode();
+    } finally {
+      state.backendReady = true;
+    }
+  }
+
+  async function initForumBackendMode() {
     const mode = CONFIG.forumMode || "local";
 
     if (mode === "giscus" && CONFIG.giscus && CONFIG.giscus.repo && CONFIG.giscus.repoId) {
@@ -481,7 +552,7 @@
 
   async function loadAndRenderForum() {
     const set = getActiveSet();
-    if (!set) {
+    if (!set || !state.backendReady) {
       state.forumPosts = [];
       renderForumFilterBar();
       renderForumPosts();
@@ -693,6 +764,57 @@
     renderForumPosts();
   }
 
+  /* -------------------- Welcome notice -------------------- */
+  function initNotice() {
+    els.noticeOk.addEventListener("click", closeNotice);
+    els.noticeReopen.addEventListener("click", openNotice);
+    let acknowledged = false;
+    try { acknowledged = sessionStorage.getItem(SESSION_NOTICE_KEY) === "1"; } catch { /* storage blocked */ }
+    if (!acknowledged) openNotice();
+  }
+
+  function openNotice() {
+    els.noticeOverlay.hidden = false;
+    document.body.classList.add("notice-open");
+    requestAnimationFrame(() => els.noticeOverlay.classList.add("show"));
+    setTimeout(() => els.noticeOk.focus({ preventScroll: true }), 60);
+  }
+
+  function closeNotice() {
+    try { sessionStorage.setItem(SESSION_NOTICE_KEY, "1"); } catch { /* storage blocked */ }
+    els.noticeOverlay.classList.remove("show");
+    document.body.classList.remove("notice-open");
+    setTimeout(() => { els.noticeOverlay.hidden = true; }, 200);
+  }
+
+  /* -------------------- Visitor counter -------------------- */
+  // Counts each browser once (anonymous). Needs the Firestore "site_stats" rule from README.md.
+  async function initVisitorCounter() {
+    if (CONFIG.showVisitorCounter === false || !state.isFirebaseReady) return;
+    const { doc, getDoc, setDoc, increment } = state.firebaseMod;
+    const ref = doc(state.firebaseDb, STATS_COLLECTION, STATS_DOC);
+
+    if (!loadJsonStorage(STORAGE_VISIT_COUNTED_KEY, false)) {
+      try {
+        await setDoc(ref, { count: increment(1) }, { merge: true });
+        saveJsonStorage(STORAGE_VISIT_COUNTED_KEY, true);
+      } catch (err) {
+        console.warn("Visitor counter could not be updated:", err);
+      }
+    }
+
+    try {
+      const snap = await getDoc(ref);
+      const count = snap.exists() ? Number(snap.data().count) || 0 : 0;
+      if (count > 0) {
+        els.visitorCount.textContent = count.toLocaleString("en-US");
+        els.visitorBox.hidden = false;
+      }
+    } catch (err) {
+      console.warn("Visitor counter unavailable:", err);
+    }
+  }
+
   /* -------------------- Utilities -------------------- */
   function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -705,11 +827,14 @@
     return String(n).padStart(2, "0");
   }
 
+  function parseIsoDate(value) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+    return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+  }
+
   function formatShortDate(value) {
     if (!value) return "";
-    let d;
-    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-    d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(value);
+    const d = parseIsoDate(value) || new Date(value);
     if (Number.isNaN(d.getTime())) return String(value);
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }

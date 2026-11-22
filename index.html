@@ -8,29 +8,59 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
   <canvas id="scene" aria-hidden="true"></canvas>
 
+  <!-- Welcome notice (shown once per visit, before the main page) -->
+  <div class="notice-overlay" id="notice-overlay" hidden>
+    <div class="notice" role="dialog" aria-modal="true" aria-labelledby="notice-title" aria-describedby="notice-body">
+      <p class="notice-kicker">Notice to Visitors</p>
+      <h2 class="notice-title" id="notice-title">Welcome to Environmental Engineering Weekly</h2>
+      <div class="notice-body" id="notice-body">
+        <p>This website is an open-access educational resource intended to support the study and review of environmental engineering. It is provided <strong>free of charge</strong> to students, educators, and practitioners for non-commercial learning purposes.</p>
+        <p>The questions, answers, and explanations are provided for educational purposes only. They do not constitute professional engineering advice, are not an official examination, and should not be relied upon in place of formal coursework, applicable codes and standards, or the judgement of a licensed professional.</p>
+        <p>Contributions posted in the Discussion forum are publicly visible. Visitors are asked to communicate respectfully and to refrain from posting personal or confidential information. This website records an anonymous visit count only; no personal information is collected.</p>
+        <p>By selecting <strong>OK</strong>, you acknowledge that you have read and understood this notice.</p>
+      </div>
+      <button type="button" class="notice-ok" id="notice-ok">OK</button>
+      <p class="notice-copy"><span class="copyright-line"></span></p>
+    </div>
+  </div>
+
   <!-- Hero -->
   <header class="hero" id="top">
+    <div class="visitor-box" id="visitor-box" hidden aria-live="polite">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="visitor-label">Visitors</span>
+      <span class="visitor-count" id="visitor-count">–</span>
+    </div>
+
     <div class="hero-inner">
       <p class="eyebrow" id="site-eyebrow">Environmental Engineering</p>
       <h1 class="hero-title">Five questions.<br /><span>Every Sunday.</span></h1>
 
+      <div class="hero-week">
+        <label class="hero-week-label" for="hero-week-select">Question set</label>
+        <select id="hero-week-select" class="week-select week-select-lg"></select>
+      </div>
+
       <div class="level-pick" role="group" aria-label="Choose a level">
-        <button type="button" class="level-btn" data-category="easy">
+        <button type="button" class="level-btn level-easy" data-category="easy">
           <span class="level-name">Easy</span>
           <span class="level-tag" data-tagline="easy"></span>
+          <span class="level-arrow" aria-hidden="true">→</span>
         </button>
-        <button type="button" class="level-btn" data-category="intermediate">
+        <button type="button" class="level-btn level-intermediate" data-category="intermediate">
           <span class="level-name">Intermediate</span>
           <span class="level-tag" data-tagline="intermediate"></span>
+          <span class="level-arrow" aria-hidden="true">→</span>
         </button>
-        <button type="button" class="level-btn" data-category="hard">
+        <button type="button" class="level-btn level-hard" data-category="hard">
           <span class="level-name">Hard</span>
           <span class="level-tag" data-tagline="hard"></span>
+          <span class="level-arrow" aria-hidden="true">→</span>
         </button>
       </div>
     </div>
@@ -64,8 +94,12 @@
   </main>
 
   <footer class="site-footer">
-    <span id="footer-text">Free · open access</span>
-    <a href="author.html">Instructor</a>
+    <div class="footer-row">
+      <span id="footer-text">Free · open access</span>
+      <button type="button" class="footer-link" id="notice-reopen">Notice to visitors</button>
+      <a href="author.html">Instructor</a>
+    </div>
+    <p class="footer-copy"><span class="copyright-line"></span></p>
   </footer>
 
   <!-- Discussion drawer -->
@@ -113,9 +147,9 @@
     </div>
   </aside>
 
-  <script src="config.js"></script>
-  <script src="data/questions.js"></script>
+  <script src="config.js?v=5"></script>
+  <script src="data/questions.js?v=5"></script>
   <script src="scene.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

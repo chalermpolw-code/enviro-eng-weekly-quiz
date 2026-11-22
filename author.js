@@ -29,6 +29,7 @@
     renderPublishedSets();
 
     els.metaCategory.addEventListener("change", suggestNextWeekLabel);
+    els.metaWeekDate.addEventListener("change", suggestNextWeekLabel);
     els.authorForm.addEventListener("submit", (e) => {
       e.preventDefault();
       handleSave("download");
@@ -90,7 +91,20 @@
     suggestNextWeekLabel();
   }
 
+  // Week number follows the release date: SITE_CONFIG.week1Date is Week 1, each later Sunday +1.
   function suggestNextWeekLabel() {
+    const week1 = (window.SITE_CONFIG && window.SITE_CONFIG.week1Date) || "";
+    const a = /^(\d{4})-(\d{2})-(\d{2})$/.exec(week1);
+    const b = /^(\d{4})-(\d{2})-(\d{2})$/.exec(els.metaWeekDate.value || "");
+    if (a && b) {
+      const start = new Date(+a[1], +a[2] - 1, +a[3]);
+      const d = new Date(+b[1], +b[2] - 1, +b[3]);
+      const n = Math.floor(Math.round((d - start) / 86400000) / 7) + 1;
+      if (n >= 1) {
+        els.metaWeekLabel.value = `Week ${n}`;
+        return;
+      }
+    }
     const cat = els.metaCategory.value;
     const countInCat = sets.filter((s) => s.category === cat).length;
     els.metaWeekLabel.value = `Week ${countInCat + 1}`;

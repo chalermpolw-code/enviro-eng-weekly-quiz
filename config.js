@@ -9,6 +9,17 @@ window.SITE_CONFIG = {
   eyebrow: "Environmental Engineering",
   footerText: "Free · open access",
 
+  // Copyright notice shown in the welcome notice and footer
+  copyrightHolder: "Environmental Engineering Weekly",
+  copyrightStartYear: 2026,
+
+  // Week numbering: Week 1 is released on this Sunday; each later Sunday is the next week.
+  // Question sets dated in the future stay hidden until their release date arrives.
+  week1Date: "2026-11-22",
+
+  // Anonymous visitor counter (stored in Firestore collection "site_stats").
+  showVisitorCounter: true,
+
   // Category display metadata
   categories: {
     easy: {

@@ -12,7 +12,7 @@ window.ENV_ENG_QUESTIONS = {
     {
       id: "2026-11-15-easy",
       weekLabel: "Week 1",
-      weekDate: "2026-11-15",
+      weekDate: "2026-11-22",
       category: "easy",
       title: "Core Environmental Parameters & Fundamentals",
       questions: [
@@ -86,7 +86,7 @@ window.ENV_ENG_QUESTIONS = {
     {
       id: "2026-11-15-intermediate",
       weekLabel: "Week 1",
-      weekDate: "2026-11-15",
+      weekDate: "2026-11-22",
       category: "intermediate",
       title: "Process Calculations & Treatment Principles",
       questions: [
@@ -160,7 +160,7 @@ window.ENV_ENG_QUESTIONS = {
     {
       id: "2026-11-15-hard",
       weekLabel: "Week 1",
-      weekDate: "2026-11-15",
+      weekDate: "2026-11-22",
       category: "hard",
       title: "Systems Trade-Offs & Operational Troubleshooting",
       questions: [
