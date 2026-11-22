@@ -9,225 +9,226 @@
  */
 window.ENV_ENG_QUESTIONS = {
   sets: [
+    /* ================= Week 1 · 22 Nov 2026 · Nitrogen Oxides (NOₓ) Formation and Control ================= */
     {
-      id: "2026-11-15-easy",
+      id: "2026-11-22-easy",
       weekLabel: "Week 1",
       weekDate: "2026-11-22",
       category: "easy",
-      title: "Core Environmental Parameters & Fundamentals",
+      title: "Nitrogen Oxides (NOₓ): Formation Basics",
       questions: [
         {
           id: "q1",
-          topic: "Water Quality • BOD₅",
-          prompt: "In standard wastewater characterization, what does five-day biochemical oxygen demand (BOD₅) primarily measure?",
+          topic: "Air Pollution • NOₓ Basics",
+          prompt: "Nitrogen oxides (NOₓ) are a major group of air pollutants released by power plants, factories, and vehicles. Which pair of gases makes up NOₓ, and what are two major environmental problems they help cause?",
           choices: [
-            "Total mass of inorganic suspended solids in a water sample",
-            "Dissolved oxygen consumed by microorganisms while oxidizing biodegradable organic matter over 5 days at 20 °C",
-            "Total oxygen required to chemically oxidize both organic and inorganic matter using potassium dichromate",
-            "Concentration of dissolved oxygen remaining in a stream after atmospheric reaeration"
+            "Nitrous oxide (N₂O) and ammonia (NH₃); ozone-layer thickening and soil salinization",
+            "Nitric oxide (NO) and nitrogen dioxide (NO₂); acid rain and ground-level ozone (smog)",
+            "Nitrogen gas (N₂) and carbon monoxide (CO); ocean acidification and deforestation",
+            "Ammonia (NH₃) and sulfur dioxide (SO₂); thermal pollution and water eutrophication"
           ],
           correctIndex: 1,
-          instructorNote: "BOD₅ is incubated in the dark at 20 °C for 5 days to quantify oxygen demand from biodegradable organics (whereas dichromate oxidation measures COD)."
+          instructorNote: "NOₓ is the collective term for nitric oxide (NO) and nitrogen dioxide (NO₂). In the atmosphere, NOₓ reacts with sunlight and volatile organic compounds (VOCs) to form ground-level ozone (photochemical smog), and reacts with moisture to form nitric acid, a major contributor to acid rain."
         },
         {
           id: "q2",
-          topic: "Drinking Water • Disinfection",
-          prompt: "Which of the following is the primary operational advantage of using chloramines (combined chlorine) instead of free chlorine as a secondary disinfectant in municipal water distribution systems?",
+          topic: "Combustion • Thermal NOₓ",
+          prompt: "Even when a factory burns a very clean fuel that contains almost no nitrogen—such as natural gas—NOₓ is still formed in the exhaust. Where does the nitrogen in this \"thermal NOₓ\" come from?",
           choices: [
-            "Chloramines inactivate Cryptosporidium oocysts much faster than free chlorine",
-            "Chloramines maintain a longer-lasting residual in the distribution network and form fewer regulated trihalomethanes (THMs)",
-            "Chloramines require zero contact time before water reaches consumer taps",
-            "Chloramines eliminate the need for coagulation and granular media filtration"
+            "From the steel walls of the furnace",
+            "From the combustion air, because normal air is mostly nitrogen gas (N₂)",
+            "From water vapor used to cool the steam pipes",
+            "From carbon dioxide breaking apart inside the smokestack"
           ],
           correctIndex: 1,
-          instructorNote: "Chloramines are weaker primary disinfectants than free chlorine, so they are typically applied for secondary residual maintenance and DBP control."
+          instructorNote: "Ambient air is roughly 78% nitrogen gas (N₂) and 21% oxygen gas (O₂). At very high flame temperatures, N₂ and O₂ from the combustion air break apart and combine to form thermal NOₓ, even when the fuel itself contains no nitrogen."
         },
         {
           id: "q3",
-          topic: "Air Quality • Particulate Matter",
-          prompt: "Why is particulate matter regulated specifically under the PM₂.₅ designation?",
+          topic: "Combustion • Flame Temperature",
+          prompt: "How does increasing the peak flame temperature inside a boiler or furnace affect the amount of thermal NOₓ produced?",
           choices: [
-            "It refers exclusively to sulfur dioxide gas emitted by coal-fired boilers",
-            "It comprises airborne particles with an aerodynamic diameter of 2.5 micrometers or smaller, which can penetrate deep into the alveolar region of the lungs",
-            "It measures ground-level ozone formed during afternoon photochemical smog",
-            "It represents volatile organic compounds with boiling points below 2.5 °C"
+            "Higher flame temperatures produce significantly more thermal NOₓ.",
+            "Higher flame temperatures produce less thermal NOₓ.",
+            "Flame temperature has no effect on thermal NOₓ.",
+            "Thermal NOₓ only forms after the furnace is shut down and cooled."
           ],
-          correctIndex: 1,
-          instructorNote: "Fine particles (≤ 2.5 µm) bypass upper respiratory defenses and deposit in the gas-exchange region of the lungs."
+          correctIndex: 0,
+          instructorNote: "Thermal NOₓ formation is strongly driven by heat—once flame temperatures climb above roughly 1,400 °C (2,600 °F), thermal NOₓ increases exponentially. Lowering peak flame temperature is therefore one of the most effective ways to curb thermal NOₓ."
         },
         {
           id: "q4",
-          topic: "Solid Waste • Management Hierarchy",
-          prompt: "In the integrated solid waste management hierarchy, which strategy is assigned the highest priority?",
+          topic: "Control Technology • SCR Catalyst",
+          prompt: "Selective Catalytic Reduction (SCR) is a common air-pollution control system that injects ammonia (NH₃) into exhaust gas to convert harmful NOₓ into harmless nitrogen gas (N₂) and water vapor (H₂O). What is the main purpose of the catalyst inside an SCR unit?",
           choices: [
-            "Sanitary landfilling with landfill gas recovery",
-            "Waste-to-energy mass-burn incineration",
-            "Source reduction and reuse",
-            "Centralized municipal composting"
+            "It traps solid ash particles like a mechanical filter.",
+            "It allows the chemical reaction to happen efficiently at much lower exhaust temperatures without being consumed itself.",
+            "It burns extra fuel to heat the exhaust gas above 1,000 °C.",
+            "It turns nitrogen gas into liquid fertilizer inside the chimney."
           ],
-          correctIndex: 2,
-          instructorNote: "Preventing waste generation at the source avoids collection, processing, and disposal impacts altogether."
+          correctIndex: 1,
+          instructorNote: "A catalyst lowers the activation energy needed for a chemical reaction without being consumed. In SCR, the catalyst allows NH₃ to convert NOₓ into N₂ and H₂O at moderate exhaust temperatures (around 250–400 °C), rather than the 930–1,090 °C required without a catalyst."
         },
         {
           id: "q5",
-          topic: "Environmental Chemistry • pH Scale",
-          prompt: "If the pH of a natural water sample decreases from 8.0 to 6.0, how does the hydrogen ion concentration [H⁺] change?",
+          topic: "Combustion • Fuel NOₓ",
+          prompt: "Coal and heavy fuel oil naturally contain nitrogen chemically bound inside the fuel, whereas natural gas contains almost none. If a power plant switches from burning heavy fuel oil to burning natural gas, what happens to its fuel NOₓ emissions?",
           choices: [
-            "It increases by a factor of 2",
-            "It increases by a factor of 20",
-            "It increases by a factor of 100",
-            "It decreases by a factor of 100"
+            "They stay the same because all fossil fuels contain equal amounts of nitrogen.",
+            "They increase sharply because natural gas burns faster.",
+            "They drop dramatically because far less nitrogen enters the furnace with the fuel.",
+            "They double because natural gas reacts with carbon dioxide."
           ],
           correctIndex: 2,
-          instructorNote: "Because pH = −log₁₀[H⁺], each 1-unit decrease in pH corresponds to a 10-fold increase in [H⁺]; a 2-unit drop gives 10² = 100×."
+          instructorNote: "Fuel NOₓ forms when nitrogen chemically bound inside the fuel oxidizes during combustion. Switching from a high-nitrogen fuel (like heavy fuel oil or coal) to a virtually nitrogen-free fuel (like natural gas) eliminates most fuel NOₓ at the source."
         }
       ]
     },
     {
-      id: "2026-11-15-intermediate",
+      id: "2026-11-22-intermediate",
       weekLabel: "Week 1",
       weekDate: "2026-11-22",
       category: "intermediate",
-      title: "Process Calculations & Treatment Principles",
+      title: "Nitrogen Oxides (NOₓ): Control Calculations",
       questions: [
         {
           id: "q1",
-          topic: "Wastewater • Activated Sludge SRT",
-          prompt: "An aeration basin has a volume of 2,000 m³ and operates at a mixed liquor suspended solids (MLSS) concentration of 3,000 mg/L. Waste activated sludge (WAS) is wasted at 40 m³/day with a concentration of 10,000 mg/L. Neglecting effluent suspended solids, what is the solids retention time (SRT)?",
+          topic: "Control Calculation • Low-NOₓ Burners",
+          prompt: "An industrial boiler emits 200 ppm of NOₓ before any pollution control is installed. After retrofitting the boiler with Low-NOₓ Burners that achieve a 45% reduction in NOₓ, what is the new NOₓ emission level?",
           choices: [
-            "5.0 days",
-            "10.0 days",
-            "15.0 days",
-            "20.0 days"
+            "90 ppm",
+            "110 ppm",
+            "155 ppm",
+            "180 ppm"
           ],
-          correctIndex: 2,
-          instructorNote: "SRT = (V × X) / (Qw × Xw) = (2,000 m³ × 3 kg/m³) / (40 m³/d × 10 kg/m³) = 6,000 kg / 400 kg/d = 15.0 days."
+          correctIndex: 1,
+          instructorNote: "A 45% reduction means 100% − 45% = 55% of the original NOₓ remains:\nNew NOₓ = 200 ppm × (1 − 0.45) = 200 × 0.55 = 110 ppm\n(Note: 90 ppm is the amount removed, not the amount remaining.)"
         },
         {
           id: "q2",
-          topic: "Water Treatment • Coagulation Chemistry",
-          prompt: "Why does adding alum [Al₂(SO₄)₃·14H₂O] for coagulation consume natural alkalinity in raw surface water?",
+          topic: "Stoichiometry • SCR Ammonia Demand",
+          prompt: "In a Selective Catalytic Reduction (SCR) reactor, nitric oxide (NO) reacts with ammonia (NH₃) according to the balanced chemical equation:\n4NO + 4NH₃ + O₂ → 4N₂ + 6H₂O\nIf an exhaust stream contains 80 mol/h of NO that must be removed, how many moles per hour of NH₃ are required for an exact stoichiometric reaction?",
           choices: [
-            "Aluminum ions hydrolyze in water to form Al(OH)₃ precipitate and release H⁺ ions, which are neutralized by bicarbonate alkalinity",
-            "Sulfate ions directly precipitate dissolved calcium carbonate as CaCO₃(s)",
-            "Alum raises the raw water pH above 11, stripping bicarbonate out as CO₂ gas",
-            "Aluminum complexes with dissolved nitrogen gas to generate nitric acid"
+            "20 mol/h",
+            "40 mol/h",
+            "80 mol/h",
+            "120 mol/h"
           ],
-          correctIndex: 0,
-          instructorNote: "Each mole of Al³⁺ forms Al(OH)₃(s) + 3 H⁺, consuming 3 equivalents of HCO₃⁻ alkalinity unless supplemental alkalinity is added."
+          correctIndex: 2,
+          instructorNote: "From the balanced equation 4NO + 4NH₃ + O₂ → 4N₂ + 6H₂O, the molar ratio of NH₃ to NO is 4:4, or 1:1. Therefore, removing 80 mol/h of NO requires 80 mol/h of NH₃."
         },
         {
           id: "q3",
-          topic: "Surface Water • Streeter-Phelps Model",
-          prompt: "In the classic Streeter-Phelps dissolved oxygen sag curve for a river receiving a steady point-source biodegradable discharge, what condition holds exactly at the critical point (maximum oxygen deficit)?",
+          topic: "Control Calculation • Controls in Series",
+          prompt: "A natural-gas boiler has an uncontrolled NOₓ emission level of 100 ppm. First, Low-NOₓ Burners reduce the emissions by 40%. Next, Flue Gas Recirculation (FGR) reduces the remaining NOₓ by 50%. What is the final NOₓ concentration?",
           choices: [
-            "The rate of biochemical deoxygenation becomes zero",
-            "The rate of atmospheric reaeration equals the rate of biochemical deoxygenation",
-            "Dissolved oxygen reaches 100% saturation",
-            "The reaeration rate constant k₂ becomes numerically equal to the BOD decay constant k₁"
+            "10 ppm",
+            "30 ppm",
+            "45 ppm",
+            "50 ppm"
           ],
           correctIndex: 1,
-          instructorNote: "At the minimum DO (maximum deficit D_c), dD/dt = k₁L − k₂D = 0, meaning reaeration (k₂D) balances deoxygenation (k₁L)."
+          instructorNote: "Apply each reduction step sequentially to what remains:\n• After Low-NOₓ Burners (40% reduction): 100 × (1 − 0.40) = 60 ppm\n• After FGR (50% reduction of the remaining 60 ppm): 60 × (1 − 0.50) = 30 ppm\n(Simply adding 40% + 50% = 90% is incorrect because the second control only acts on the NOₓ left after the first control.)"
         },
         {
           id: "q4",
-          topic: "Unit Operations • Ideal Sedimentation",
-          prompt: "According to Type I (discrete particle) ideal settling theory in a horizontal-flow rectangular clarifier, what happens to the surface overflow rate (v₀ = Q / A_surface) if the basin depth is doubled while flow rate Q and surface area A_surface remain constant?",
+          topic: "SCR Operation • Ammonia Slip",
+          prompt: "An SCR system receives exhaust gas containing 100 ppm of NO. Because gas mixing is never completely uniform, operators inject 85 ppm of NH₃ in order to remove 80 ppm of NO (reacting in a 1:1 ratio). Assuming no other side reactions occur, how much unreacted ammonia (ammonia slip) leaves the reactor?",
           choices: [
-            "The overflow rate doubles, reducing particle removal efficiency",
-            "The overflow rate halves, improving particle removal efficiency",
-            "The overflow rate remains unchanged, so theoretical discrete-settling removal efficiency is unaffected",
-            "The overflow rate decreases by a factor of four"
+            "5 ppm",
+            "15 ppm",
+            "20 ppm",
+            "85 ppm"
           ],
-          correctIndex: 2,
-          instructorNote: "In ideal Type I settling, both detention time and vertical settling distance double when depth doubles, so critical settling velocity v₀ = Q / A_surface is independent of depth."
+          correctIndex: 0,
+          instructorNote: "Since NH₃ and NO react in a 1:1 ratio, removing 80 ppm of NO consumes 80 ppm of NH₃. The leftover ammonia escaping the reactor is:\nAmmonia slip = 85 ppm injected − 80 ppm consumed = 5 ppm"
         },
         {
           id: "q5",
-          topic: "Air Dispersion • Gaussian Plume",
-          prompt: "In a Gaussian plume model for an elevated continuous point source under neutral stability, approximately how does doubling the effective stack height H (holding emission rate and wind speed constant) affect the maximum ground-level centerline concentration?",
+          topic: "Energy Trade-off • Air Preheat",
+          prompt: "Preheating combustion air saves fuel, but it also raises flame temperature and increases thermal NOₓ. As a practical engineering rule of thumb, lowering the combustion-air preheat temperature by 40 °F reduces boiler thermal efficiency by about 1%. If a plant lowers its air preheat temperature by 120 °F to curb NOₓ emissions, what is the expected drop in boiler efficiency?",
           choices: [
-            "It decreases the maximum ground-level concentration by a factor of 2",
-            "It decreases the maximum ground-level concentration by a factor of 4",
-            "It increases the maximum ground-level concentration by a factor of 2",
-            "It has no effect because ground-level concentration depends solely on wind speed"
+            "1.5%",
+            "3%",
+            "4%",
+            "12%"
           ],
           correctIndex: 1,
-          instructorNote: "Maximum ground-level concentration scales inversely with H² (C_max ∝ Q / (u·H²)), so doubling H lowers C_max to roughly one-fourth."
+          instructorNote: "Using the rule of thumb of 1% efficiency loss per 40 °F drop in air preheat temperature:\nEfficiency loss = (120 °F ÷ 40 °F) × 1% = 3%"
         }
       ]
     },
     {
-      id: "2026-11-15-hard",
+      id: "2026-11-22-hard",
       weekLabel: "Week 1",
       weekDate: "2026-11-22",
       category: "hard",
-      title: "Systems Trade-Offs & Operational Troubleshooting",
+      title: "Nitrogen Oxides (NOₓ): Real-World Applications",
       questions: [
         {
           id: "q1",
-          topic: "Biological Nutrient Removal • MLE Process",
-          prompt: "A municipal wastewater plant operating a Modified Ludzack-Ettinger (MLE) configuration achieves complete nitrification in the aerobic zone, yet effluent nitrate (NO₃⁻-N) remains high despite adequate internal mixed liquor recycle. Which operational limitation is the most plausible root cause?",
+          topic: "Combustion Tuning • Excess Air",
+          prompt: "A plant engineer wants to cut NOₓ emissions from an industrial boiler without purchasing new equipment, so they gradually reduce the excess combustion air supplied to the burners. At first, fuel efficiency improves and NOₓ drops. However, if the engineer reduces the air supply too far, what real-world problem will force them to stop?",
           choices: [
-            "Insufficient dissolved oxygen in the aerobic zone prevents complete conversion of nitrite to nitrate",
-            "Insufficient readily biodegradable organic carbon (rbCOD) or excessive dissolved oxygen carry-over into the anoxic zone is limiting denitrification",
-            "The solids retention time (SRT) is too long, allowing heterotrophic denitrifiers to outcompete autotrophic nitrifiers",
-            "Elevated effluent alkalinity is chemically inhibiting heterotrophic denitrification"
+            "The boiler will begin producing large amounts of sulfur dioxide (SO₂) from the air.",
+            "Incomplete combustion will cause carbon monoxide (CO) emissions to spike and make the flame unstable or overly long.",
+            "The flame will become so hot that it immediately melts the smokestack.",
+            "The exhaust gas will become too cold for nitrogen gas (N₂) to remain a gas."
           ],
           correctIndex: 1,
-          instructorNote: "Denitrifiers require anoxic conditions (minimal DO) and an electron donor (rbCOD). High DO in the internal recycle or low influent rbCOD stalls nitrate reduction."
+          instructorNote: "Lowering excess air restricts oxygen in the flame zone, which reduces NOₓ and cuts heat lost up the stack. However, pushing excess air too low starves the flame of oxygen (fuel-rich operation), causing incomplete combustion—resulting in high carbon monoxide (CO), unburned fuel, long smoky flames, and flame instability."
         },
         {
           id: "q2",
-          topic: "Water Treatment • Disinfection Byproducts",
-          prompt: "A conventional surface water plant relocates chlorine dosing from the rapid-mix influent (pre-chlorination) to downstream of the granular media filters, while maintaining the same final chlorine dose. Why does regulated trihalomethane (THM) formation typically drop substantially?",
+          topic: "Control Selection • Flue Gas Recirculation",
+          prompt: "Flue Gas Recirculation (FGR)—which routes cooled exhaust gas back into the burner to lower flame temperature—can cut NOₓ by 50–70% in a natural-gas boiler, yet it is far less effective on a coal-fired boiler. Why does FGR work so much better on natural gas than on coal?",
           choices: [
-            "Granular filtration removes dissolved chloride ions that catalyze THM reactions",
-            "Relocating chlorination lowers water temperature inside the clearwell",
-            "Coagulation, flocculation, and filtration remove natural organic matter (NOM) precursors before chlorine contacts the water",
-            "Post-filtration water has zero alkalinity, preventing haloacetic acid and THM formation"
+            "Natural gas produces mainly thermal NOₓ (which drops sharply when flame temperature is lowered), whereas coal produces substantial fuel NOₓ from nitrogen bound in the coal (which is much less sensitive to flame temperature).",
+            "Coal exhaust contains no carbon dioxide, so it cannot dilute or cool the flame.",
+            "Natural gas burns at a much lower temperature than coal, so FGR freezes the coal flame.",
+            "FGR increases the oxygen concentration inside a coal burner, creating additional NOₓ."
           ],
-          correctIndex: 2,
-          instructorNote: "Removing humic and fulvic NOM precursors via enhanced coagulation and filtration before adding free chlorine prevents precursor–chlorine reaction."
+          correctIndex: 0,
+          instructorNote: "FGR works primarily as a thermal diluent that lowers peak flame temperature—making it ideal for curbing thermal NOₓ in natural-gas boilers. In coal-fired boilers, however, a large share of NOₓ comes from organically bound nitrogen in the coal (fuel NOₓ). Because carbon–nitrogen bonds in coal break much more easily than atmospheric N₂ bonds, fuel NOₓ depends mostly on local air–fuel mixing (stoichiometry) rather than flame temperature."
         },
         {
           id: "q3",
-          topic: "Groundwater Remediation • Sorption & Tailing",
-          prompt: "During pump-and-treat remediation of an aquifer contaminated with a hydrophobic organic solvent (high octanol-water partition coefficient, K_ow), effluent concentrations fall rapidly at first but then plateau into a persistent 'tailing' curve above cleanup targets for years. What mechanism primarily drives this behavior?",
+          topic: "Retrofit Design • Flame Length",
+          prompt: "A refinery upgrades an older fired heater by installing Low-NOₓ Burners (LNBs), which intentionally slow down air–fuel mixing to keep peak flame temperatures lower. During startup, operators observe that the flames are 50–100% longer than before. What is the main real-world risk of these longer flames inside an existing heater?",
           choices: [
-            "Rate-limited desorption and slow back-diffusion from organic-rich soil micropores and low-permeability clay lenses into mobile groundwater",
-            "Spontaneous radioactive decay of the organic solvent into more soluble daughter compounds",
-            "Rapid aerobic mineralization that permanently doubles aquifer hydraulic conductivity",
-            "Complete volatilization of the contaminant below the water table"
+            "The longer flames will pull nitrogen out of the steel furnace walls and increase fuel NOₓ.",
+            "The flames may directly touch (\"impinge on\") the process tubes inside the heater, causing localized overheating and tube damage.",
+            "The heater will no longer release enough total heat to warm the process fluid.",
+            "The longer flames will convert all NOₓ into ammonia inside the firebox."
           ],
-          correctIndex: 0,
-          instructorNote: "Strong hydrophobic sorption and diffusion into immobile zones mean clean flushed porewater rebounds as trapped mass slowly diffuses back out."
+          correctIndex: 1,
+          instructorNote: "Because Low-NOₓ Burners delay air–fuel mixing to avoid hot spots, they naturally produce cooler, longer flames (50–100% longer than conventional burners). In an existing fired heater with fixed dimensions, engineers must check burner-to-tube clearances carefully; if the flame touches the tubes (flame impingement), it can cause severe localized overheating, internal fouling, or tube rupture."
         },
         {
           id: "q4",
-          topic: "Anaerobic Digestion • Toxicity & Equilibrium",
-          prompt: "An anaerobic digester treating high-protein industrial waste experiences a rise in pH from 7.2 to 8.1 accompanied by a sharp drop in methane production and rising volatile fatty acid (VFA) concentrations. Which inhibition mechanism best explains this behavior?",
+          topic: "Safety • Ammonia Reagent Storage",
+          prompt: "SCR systems require ammonia (NH₃) to reduce NOₓ. Many modern industrial facilities choose aqueous ammonia (a liquid solution of about 27% NH₃ in water) instead of pure anhydrous ammonia, even though aqueous ammonia requires extra energy to vaporize the water. What is the primary real-world reason for choosing aqueous ammonia?",
           choices: [
-            "Elevated pH shifts the NH₄⁺ / NH₃ equilibrium toward unionized free ammonia (NH₃), which diffuses across cell membranes and inhibits methanogens",
-            "Hydrogenotrophic methanogens consume excess CO₂, causing immediate irreversible acidification",
-            "Sulfate-reducing bacteria oxidize all dissolved methane directly into hydrogen sulfide gas",
-            "High pH selectively kills hydrolytic bacteria while leaving acetoclastic methanogens unaffected"
+            "Aqueous ammonia removes twice as much NOₓ per mole of NH₃ as anhydrous ammonia.",
+            "Pure anhydrous ammonia is toxic and must be stored under high pressure, whereas aqueous ammonia has a much lower vapor pressure and is significantly safer to transport and store near populated areas.",
+            "Anhydrous ammonia cannot react with NO in the presence of a catalyst.",
+            "Adding water vapor to the exhaust gas permanently doubles the lifespan of the SCR catalyst."
           ],
-          correctIndex: 0,
-          instructorNote: "Protein degradation releases ammonia; as pH rises toward pKa (~9.25), the unionized NH₃ fraction increases sharply and suppresses methanogenesis before VFAs can neutralize pH."
+          correctIndex: 1,
+          instructorNote: "Pure anhydrous ammonia is a toxic gas at ambient conditions and must be stored and transported under high pressure in thick-walled tanks, posing significant community and worker safety hazards if a leak occurs. Aqueous ammonia (~27% NH₃ in water) has a near-atmospheric vapor pressure at room temperature, making storage and handling far safer—a real-world safety benefit that usually outweighs the modest energy cost of vaporizing the water."
         },
         {
           id: "q5",
-          topic: "Solid Waste • Bioreactor Landfills",
-          prompt: "Why must leachate recirculation in an anaerobic bioreactor landfill be carefully engineered and throttled rather than maximized unconditionally?",
+          topic: "SCR Operation • Ammonium Bisulfate",
+          prompt: "In a power plant burning sulfur-containing coal, the SCR reactor is carefully operated above roughly 320 °C, and ammonia slip is kept very low (below 5 ppm). What practical problem occurs if the exhaust gas cools below this temperature while excess ammonia and sulfur trioxide (SO₃) are both present?",
           choices: [
-            "Excess moisture lowers internal waste temperatures below freezing",
-            "Over-saturation can generate perched leachate tables, reduce shear strength (slope instability), increase hydraulic head on the bottom liner, and flood gas collection wells",
-            "Recirculation permanently converts the entire landfill interior to aerobic decomposition",
-            "Recirculating leachate eliminates all biodegradable organic carbon within 24 hours"
+            "Excess ammonia freezes into solid ice crystals that block the smokestack.",
+            "Excess ammonia reacts with SO₃ and water vapor to form sticky ammonium bisulfate (NH₄HSO₄), which coats and clogs the catalyst and downstream heat-exchange equipment.",
+            "The catalyst melts and releases sulfur dioxide back into the furnace.",
+            "NOₓ converts into liquid nitric acid and explodes inside the boiler."
           ],
           correctIndex: 1,
-          instructorNote: "Geotechnical stability, liner head limits (typically ≤ 30 cm), and maintaining open gas extraction pathways constrain safe moisture addition rates."
+          instructorNote: "Burning sulfur-bearing coal produces SO₂ and small amounts of SO₃ (and the SCR catalyst itself oxidizes some SO₂ to SO₃). If flue-gas temperatures fall below about 320 °C, SO₃ reacts with excess NH₃ and water vapor to form sticky ammonium bisulfate (NH₄HSO₄):\nSO₃ + NH₃ + H₂O → NH₄HSO₄\nThis sticky compound coats the catalyst pores and downstream air preheaters, causing fouling, pressure-drop buildup, and equipment plugging."
         }
       ]
     }
