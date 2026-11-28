@@ -9,10 +9,10 @@
  */
 window.ENV_ENG_QUESTIONS = {
   sets: [
-    /* ================= Week 1 · 22 Nov 2026 · Nitrogen Oxides (NOₓ) Formation and Control ================= */
+    /* ================= Week 01 · 22 Nov 2026 · Nitrogen Oxides (NOₓ) Formation and Control ================= */
     {
       id: "2026-11-22-easy",
-      weekLabel: "Week 1",
+      weekLabel: "Week 01",
       weekDate: "2026-11-22",
       category: "easy",
       title: "Nitrogen Oxides (NOₓ): Formation Basics",
@@ -86,7 +86,7 @@ window.ENV_ENG_QUESTIONS = {
     },
     {
       id: "2026-11-22-intermediate",
-      weekLabel: "Week 1",
+      weekLabel: "Week 01",
       weekDate: "2026-11-22",
       category: "intermediate",
       title: "Nitrogen Oxides (NOₓ): Control Calculations",
@@ -160,7 +160,7 @@ window.ENV_ENG_QUESTIONS = {
     },
     {
       id: "2026-11-22-hard",
-      weekLabel: "Week 1",
+      weekLabel: "Week 01",
       weekDate: "2026-11-22",
       category: "hard",
       title: "Nitrogen Oxides (NOₓ): Real-World Applications",
@@ -229,6 +229,229 @@ window.ENV_ENG_QUESTIONS = {
           ],
           correctIndex: 1,
           instructorNote: "Burning sulfur-bearing coal produces SO₂ and small amounts of SO₃ (and the SCR catalyst itself oxidizes some SO₂ to SO₃). If flue-gas temperatures fall below about 320 °C, SO₃ reacts with excess NH₃ and water vapor to form sticky ammonium bisulfate (NH₄HSO₄):\nSO₃ + NH₃ + H₂O → NH₄HSO₄\nThis sticky compound coats the catalyst pores and downstream air preheaters, causing fouling, pressure-drop buildup, and equipment plugging."
+        }
+      ]
+    },
+    /* ================= Week 02 · 29 Nov 2026 · Activated Carbon Adsorption in Air and Water Pollution Control ================= */
+    {
+      id: "2026-11-29-easy",
+      weekLabel: "Week 02",
+      weekDate: "2026-11-29",
+      category: "easy",
+      title: "Activated Carbon Adsorption: Fundamentals",
+      questions: [
+        {
+          id: "q1",
+          topic: "Adsorption • Terminology",
+          prompt: "In air and water pollution control using activated carbon, pollutants adhere as an extremely thin layer onto the surface of the porous solid rather than dissolving uniformly throughout its interior bulk. What is this surface-adhesion process called, and what term describes the pollutant molecules being captured?",
+          choices: [
+            "Absorption; adsorbent",
+            "Adsorption; adsorbate",
+            "Adsorption; adsorbent",
+            "Desorption; adsorbate"
+          ],
+          correctIndex: 1,
+          instructorNote: "Adsorption is a surface phenomenon in which molecules from a gas or liquid adhere to the surface of a solid (in contrast to absorption, where a substance penetrates into the bulk volume of another phase). The solid providing the surface (e.g., activated carbon) is the adsorbent, and the pollutant molecule being attached to the surface is the adsorbate."
+        },
+        {
+          id: "q2",
+          topic: "Activated Carbon • Surface Area",
+          prompt: "What physical property of activated carbon enables a relatively small mass of it to capture large quantities of pollutants from air or water streams?",
+          choices: [
+            "Its high electrical conductivity attracts neutral pollutant molecules.",
+            "Its highly porous internal structure provides an enormous surface area per unit mass (typically around 1,000 m²/g).",
+            "It dissolves slowly into water to chemically neutralize dissolved contaminants.",
+            "Its smooth, nonporous outer surface prevents pollutants from bouncing off."
+          ],
+          correctIndex: 1,
+          instructorNote: "Because adsorption occurs at surfaces, capacity is closely tied to available surface area. Thermal or chemical activation creates a vast network of microscopic internal pores in carbon, yielding surface areas on the order of 500–1,500 m²/g (commonly ~1,000 m²/g)."
+        },
+        {
+          id: "q3",
+          topic: "Adsorption • Physisorption vs. Chemisorption",
+          prompt: "How does physical adsorption differ from chemisorption?",
+          choices: [
+            "Physical adsorption relies on weak intermolecular (van der Waals) forces and is generally reversible, whereas chemisorption involves stronger chemical bonding with surface atoms and is typically irreversible.",
+            "Physical adsorption occurs only in liquid streams, whereas chemisorption occurs only in gas streams.",
+            "Physical adsorption permanently destroys the pollutant molecule, whereas chemisorption leaves it unchanged.",
+            "Physical adsorption requires extremely high temperatures to occur, whereas chemisorption occurs only below freezing."
+          ],
+          correctIndex: 0,
+          instructorNote: "Physical adsorption (physisorption) is driven by weak van der Waals forces, allowing adsorbed species to be released (desorbed) relatively easily by raising temperature or lowering pressure. Chemisorption involves chemical reaction and electron sharing/transfer with surface sites, making it much stronger and generally irreversible."
+        },
+        {
+          id: "q4",
+          topic: "Water Treatment • Target Contaminants",
+          prompt: "Because a pure activated carbon surface is predominantly nonpolar, which type of contaminant is activated carbon generally most effective at removing from water?",
+          choices: [
+            "Dissolved inorganic salts such as sodium chloride (NaCl)",
+            "Nonpolar organic compounds such as industrial solvents, pesticides, and odor-causing organics",
+            "Pure water molecules",
+            "Positively charged metal ions such as sodium (Na⁺)"
+          ],
+          correctIndex: 1,
+          instructorNote: "Adsorption follows the general principle of \"like adsorbs like.\" Because activated carbon has a largely nonpolar surface, it has a strong affinity for nonpolar and weakly polar organic molecules, whereas it is a poor adsorbent for highly polar inorganic electrolytes such as NaCl or simple metal ions like Na⁺."
+        },
+        {
+          id: "q5",
+          topic: "Operation • Regeneration",
+          prompt: "Once an activated carbon bed becomes saturated with captured pollutants, what is the process of releasing the adsorbed molecules from the carbon surface so the carbon can be reused called?",
+          choices: [
+            "Coagulation",
+            "Sedimentation",
+            "Desorption (regeneration)",
+            "Filtration"
+          ],
+          correctIndex: 2,
+          instructorNote: "Desorption is the reverse of adsorption—removing adsorbed molecules from the adsorbent surface (for example, via steam stripping, solvent extraction, or thermal treatment) to regenerate the carbon's adsorptive capacity."
+        }
+      ]
+    },
+    {
+      id: "2026-11-29-intermediate",
+      weekLabel: "Week 02",
+      weekDate: "2026-11-29",
+      category: "intermediate",
+      title: "Activated Carbon Adsorption: Design Calculations",
+      questions: [
+        {
+          id: "q1",
+          topic: "Air Pollution Control • Carbon Mass",
+          prompt: "An industrial drying unit emits 4.5 kg/hr of an organic solvent vapor into an exhaust air stream. A granular activated carbon (GAC) adsorber treats this stream continuously for an 8-hour work shift before being taken offline for regeneration. If the carbon has an effective working adsorption capacity of 15% by weight (0.15 kg of solvent per 1 kg of carbon), what is the minimum mass of activated carbon required in the bed for one 8-hour shift?",
+          choices: [
+            "5.4 kg",
+            "30 kg",
+            "240 kg",
+            "540 kg"
+          ],
+          correctIndex: 2,
+          instructorNote: "1. Total solvent emitted over the 8-hour shift:\nTotal solvent mass = 4.5 kg/hr × 8 hr = 36 kg\n2. Divide by the working adsorption capacity (0.15 kg solvent / kg carbon):\nRequired carbon mass = 36 kg ÷ 0.15 = 240 kg\n(Common pitfalls: forgetting to multiply by the 8-hour shift gives 30 kg; multiplying instead of dividing by 0.15 gives 5.4 kg.)"
+        },
+        {
+          id: "q2",
+          topic: "Water Treatment • GAC Bed Depth",
+          prompt: "A fixed-bed GAC column for wastewater treatment requires 2,400 kg of carbon with a bulk (bed) density of 480 kg/m³. The column must treat a steady wastewater flow rate of 24 m³/hr at a design superficial linear velocity (hydraulic loading) of 0.20 m/min. What is the required depth (height) of the carbon bed?",
+          choices: [
+            "0.042 m",
+            "2.5 m",
+            "5.0 m",
+            "10.0 m"
+          ],
+          correctIndex: 1,
+          instructorNote: "1. Carbon bed volume: V = Mass ÷ Bulk density = 2,400 kg ÷ 480 kg/m³ = 5.0 m³\n2. Convert flow rate to match the velocity units: Q = 24 m³/hr ÷ 60 min/hr = 0.40 m³/min\n3. Bed cross-sectional area: A = Q ÷ vₛ = 0.40 m³/min ÷ 0.20 m/min = 2.0 m²\n4. Bed depth: H = V ÷ A = 5.0 m³ ÷ 2.0 m² = 2.5 m\n(Common pitfall: failing to convert hours to minutes gives an area of 120 m² and an unrealistically shallow bed depth of 0.042 m.)"
+        },
+        {
+          id: "q3",
+          topic: "Water Treatment • Residence Time",
+          prompt: "A GAC column has an empty-bed volume of 12 m³ and treats wastewater at a steady flow rate of 0.40 m³/min. If the void space between the carbon granules (packed-bed porosity) accounts for 40% of the total bed volume, what is the actual hydraulic residence time of the liquid passing through the carbon bed?",
+          choices: [
+            "12 minutes",
+            "18 minutes",
+            "30 minutes",
+            "75 minutes"
+          ],
+          correctIndex: 0,
+          instructorNote: "• Empty-Bed Contact Time (EBCT) uses the total empty volume of the bed:\nEBCT = V_bed ÷ Q = 12 m³ ÷ 0.40 m³/min = 30 min\n• The actual hydraulic residence time (τ) depends on the volume actually occupied by liquid (void space, ε = 0.40):\nV_liquid = ε × V_bed = 0.40 × 12 m³ = 4.8 m³\nτ = V_liquid ÷ Q = 4.8 m³ ÷ 0.40 m³/min = 12 min\n(Equivalently, τ = EBCT × ε = 30 × 0.40 = 12 min.)\n(Common pitfalls: reporting the EBCT of 30 min instead of the actual residence time, or multiplying by the solid fraction 1 − 0.40 = 0.60, giving 18 min.)"
+        },
+        {
+          id: "q4",
+          topic: "Operation • Makeup Carbon",
+          prompt: "A wastewater treatment facility maintains a constant operating inventory of 20,000 kg of granular activated carbon. The entire inventory undergoes thermal regeneration once per month (12 cycles per year), with a 6% carbon loss per cycle due to burn-off and mechanical attrition. Fresh makeup carbon is added after each cycle to restore the bed to its full 20,000 kg inventory. How much total makeup carbon must be purchased per year?",
+          choices: [
+            "1,200 kg",
+            "10,480 kg",
+            "14,400 kg",
+            "20,000 kg"
+          ],
+          correctIndex: 2,
+          instructorNote: "Because fresh makeup carbon is added after every cycle to maintain a constant 20,000 kg inventory, each monthly cycle loses 6% of 20,000 kg:\nLoss per cycle = 20,000 kg × 0.06 = 1,200 kg/cycle\nOver 12 monthly cycles:\nAnnual makeup carbon = 1,200 kg/cycle × 12 cycles/yr = 14,400 kg/yr\n(Common pitfalls: calculating only one cycle's loss gives 1,200 kg; applying exponential decay, 20,000 × (1 − 0.94¹²) ≈ 10,480 kg, would only apply if the inventory were allowed to shrink without replenishment.)"
+        },
+        {
+          id: "q5",
+          topic: "Carbon Selection • Characterization",
+          prompt: "An environmental engineer is selecting an activated carbon specifically to decolorize textile-dyeing wastewater containing large, high-molecular-weight organic dye molecules. Which standard carbon characterization parameter is the most appropriate primary indicator of a carbon's capacity for these large molecules?",
+          choices: [
+            "Iodine number, because it specifically measures the volume of large pores available for high-molecular-weight compounds.",
+            "Molasses number (or molasses decolorizing index), because it correlates with the larger pore structure required to adsorb high-molecular-weight substances.",
+            "Abrasion number, because it measures the chemical attraction between organic dyes and the carbon surface.",
+            "Apparent density, because denser carbon grades always possess larger pores for dye removal."
+          ],
+          correctIndex: 1,
+          instructorNote: "Different characterization indices probe different pore-size regimes. The iodine number uses small iodine molecules and correlates with microporosity and the capacity to adsorb low-molecular-weight organics. By contrast, the molasses number (or molasses decolorizing index) uses larger color bodies and correlates with the larger pores (mesopores/macropores) needed to accommodate high-molecular-weight molecules such as textile dyes. The abrasion number measures mechanical durability against attrition, not chemical affinity."
+        }
+      ]
+    },
+    {
+      id: "2026-11-29-hard",
+      weekLabel: "Week 02",
+      weekDate: "2026-11-29",
+      category: "hard",
+      title: "Activated Carbon Adsorption: Real-World Applications",
+      questions: [
+        {
+          id: "q1",
+          topic: "Thermodynamics • Inlet Gas Cooling",
+          prompt: "A manufacturing facility plans to route a hot drying-oven exhaust stream (85 °C) containing volatile organic solvent vapors directly into a fixed-bed GAC adsorber. Why is it critical to cool the exhaust gas (typically below ~40 °C) before it enters the carbon bed?",
+          choices: [
+            "Physical adsorption is endothermic, so cooler gas supplies the thermal energy required for solvent molecules to attach to the carbon.",
+            "Physical adsorption is exothermic; elevated inlet temperatures reduce equilibrium adsorption capacity, and the heat of adsorption released inside the bed can further raise bed temperatures—degrading capture efficiency and creating potential hot-spot or fire hazards.",
+            "Above 40 °C, activated carbon immediately undergoes complete thermal gasification into carbon dioxide.",
+            "Cooling the gas increases its volumetric flow rate, which lowers pressure drop across the packed bed."
+          ],
+          correctIndex: 1,
+          instructorNote: "Physical adsorption releases heat (\"heat of adsorption,\" similar in magnitude to heat of condensation/liquefaction). By thermodynamic equilibrium (Le Chatelier's principle), increasing temperature shifts equilibrium toward desorption, sharply reducing adsorption capacity. In addition, if an already hot gas stream enters a bed adsorbing oxidizable organic vapors, the added heat of adsorption can cause localized overheating (\"hot spots\") or bed fires."
+        },
+        {
+          id: "q2",
+          topic: "Process Design • Countercurrent / Lead-Lag",
+          prompt: "In continuous industrial wastewater treatment, why do engineers frequently operate granular activated carbon in a countercurrent (moving/pulsed bed) or lead-lag series column configuration rather than relying on a single fixed-bed column?",
+          choices: [
+            "To ensure that the highest-concentration influent contacts the nearly exhausted carbon (maximizing its saturation loading), while the lowest-concentration effluent contacts fresh virgin carbon just before discharge.",
+            "To eliminate the need for backwashing whenever suspended solids are present in the influent stream.",
+            "To prevent a mass transfer zone (wave front) from forming inside the carbon bed.",
+            "To convert physical adsorption into irreversible chemisorption so that carbon regeneration is no longer required."
+          ],
+          correctIndex: 0,
+          instructorNote: "In a single fixed bed, the column must be taken offline as soon as the mass transfer zone (wave front) reaches the outlet and effluent concentration exceeds the limit, leaving the carbon inside the wave front only partially utilized. Countercurrent (moving/pulsed) beds and lead-lag series columns overcome this by exposing nearly spent carbon to the strongest influent (pushing it to full equilibrium capacity) while using fresh carbon as a polishing zone to achieve very low effluent concentrations."
+        },
+        {
+          id: "q3",
+          topic: "Solvent Recovery • Downstream Separation",
+          prompt: "In a dual-bed vapor-phase solvent recovery system, low-pressure steam is passed through a saturated carbon bed to desorb the captured organic solvent, and the resulting steam–solvent vapor mixture is cooled in a condenser. How does the chemical nature of the solvent determine the separation equipment needed downstream of the condenser?",
+          choices: [
+            "Water-insoluble solvents separate into a distinct liquid layer and can be recovered by simple gravity decantation, whereas water-miscible solvents form a single homogeneous aqueous solution and require distillation.",
+            "Water-miscible solvents separate automatically by gravity in a decanter, whereas water-insoluble solvents require multi-stage distillation.",
+            "Both water-miscible and water-insoluble solvents are separated identically using a rapid sand filter downstream of the condenser.",
+            "Steam desorption cannot be used for water-insoluble solvents because steam only desorbs polar molecules."
+          ],
+          correctIndex: 0,
+          instructorNote: "Condensing the steam–solvent vapor mixture produces both liquid water and liquid solvent. If the solvent is immiscible with water (e.g., perchloroethylene or toluene), it forms two distinct liquid phases that separate easily by density in a decanter. If the solvent is water-miscible (e.g., acetone or methanol), it dissolves into the steam condensate, requiring distillation (with higher capital and energy costs) to recover pure solvent."
+        },
+        {
+          id: "q4",
+          topic: "Thermal Reactivation • Furnace Control",
+          prompt: "When spent GAC from a wastewater treatment plant is thermally reactivated at 800–900 °C in a rotary kiln or multiple-hearth furnace, why is the free oxygen concentration inside the furnace tightly restricted (typically below 1%) and an afterburner or air scrubber installed on the furnace exhaust?",
+          choices: [
+            "Low oxygen prevents excessive oxidation (\"overburning\") of the carbon skeleton itself while enabling selective volatilization and removal of adsorbed organics; the afterburner/scrubber destroys volatilized contaminants so water pollution is not simply transferred into air pollution.",
+            "Low oxygen cools the furnace to keep the carbon granules from melting, while the scrubber recovers liquid wastewater for direct reuse.",
+            "Restricting oxygen converts the carbon surface into polar silica gel, while the afterburner cools the exhaust gas before venting.",
+            "High oxygen levels cause adsorbed organic pollutants to bond permanently to the carbon surface via chemisorption."
+          ],
+          correctIndex: 0,
+          instructorNote: "At reactivation temperatures (800–900 °C), excess free oxygen would aggressively burn away the activated carbon itself (\"overburning\"), causing severe carbon losses. Maintaining a low-oxygen atmosphere (typically <1% O₂, using steam and/or CO₂) selectively volatilizes and gasifies the adsorbed organics while preserving most of the carbon structure (limiting loss to ~5–10% per cycle). Because thermal reactivation drives hazardous organics into the gas phase, an afterburner and/or scrubber is essential to prevent cross-media pollution transfer from water to air."
+        },
+        {
+          id: "q5",
+          topic: "Drinking Water • PAC vs. GAC",
+          prompt: "A municipal drinking water plant normally experiences low raw-water organic levels year-round, except during brief 3-week summer algae blooms that cause severe taste-and-odor problems. Why is dosing Powdered Activated Carbon (PAC) ahead of filtration typically favored over installing a permanent Granular Activated Carbon (GAC) post-filtration contactor with on-site thermal regeneration, and what key operational constraint must engineers manage when feeding PAC upstream of a filter?",
+          choices: [
+            "PAC requires much lower capital investment and provides operational flexibility for intermittent, once-through use, but excessive PAC dosages can cause rapid filter head-loss buildup or breakthrough of fine carbon particles into the finished water.",
+            "PAC is easier to thermally regenerate on-site than GAC, but it cannot remove taste-and-odor compounds without high-pressure steam.",
+            "PAC provides longer contact time than a dedicated GAC column, but it raises the water's pH to corrosive levels.",
+            "GAC is incapable of adsorbing seasonal organic compounds, whereas PAC must be heated above 80 °C to remain suspended in water."
+          ],
+          correctIndex: 0,
+          instructorNote: "GAC contactors with on-site thermal regeneration involve high capital costs and are typically economical only for continuous, high-usage applications. For brief, seasonal taste-and-odor episodes, PAC can be dosed intermittently on a once-through basis with minimal capital expenditure. However, when PAC is applied ahead of rapid sand or mixed-media filters, operators must carefully limit dosage (and often use a small polyelectrolyte dose with mixed-media filtration) to prevent excessive head-loss buildup and avoid carbon-fines breakthrough into the distribution system."
         }
       ]
     }

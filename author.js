@@ -101,13 +101,13 @@
       const d = new Date(+b[1], +b[2] - 1, +b[3]);
       const n = Math.floor(Math.round((d - start) / 86400000) / 7) + 1;
       if (n >= 1) {
-        els.metaWeekLabel.value = `Week ${n}`;
+        els.metaWeekLabel.value = `Week ${String(n).padStart(2, "0")}`;
         return;
       }
     }
     const cat = els.metaCategory.value;
     const countInCat = sets.filter((s) => s.category === cat).length;
-    els.metaWeekLabel.value = `Week ${countInCat + 1}`;
+    els.metaWeekLabel.value = `Week ${String(countInCat + 1).padStart(2, "0")}`;
   }
 
   function getNextSundayIso() {

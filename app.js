@@ -176,7 +176,7 @@
 
   function weekLabel(weekDate) {
     const n = weekNumber(weekDate);
-    if (n && n >= 1) return `Week ${n}`;
+    if (n && n >= 1) return `Week ${String(n).padStart(2, "0")}`;
     const set = QUESTION_BANK.find((s) => s.weekDate === weekDate);
     return (set && set.weekLabel) || "Week";
   }
